@@ -1,0 +1,11 @@
+user : admin
+pass : admin	
+
+user : sdm
+pass : sdm
+
+user : kaur
+pass : kaur
+
+user : staf
+pass : staf
