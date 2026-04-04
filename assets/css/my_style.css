@@ -1,0 +1,46 @@
+ .buttons-print {
+ 	/* background-color: lightgray; */
+ 	color: black;
+ 	font-size: 12px;
+ }
+
+ .buttons-pdf {
+ 	/* background-color: lightgray; */
+ 	color: black;
+ 	font-size: 12px;
+ }
+
+ .buttons-excel {
+ 	/* background-color: lightgray; */
+ 	color: black;
+ 	font-size: 12px;
+ }
+
+ .buttons-copy {
+ 	/* background-color: lightgray; */
+ 	color: black;
+ 	font-size: 12px;
+ }
+
+ .buttons-csv {
+ 	/* background-color: lightgray; */
+ 	color: black;
+ 	font-size: 12px;
+ }
+
+ div.dt-buttons {
+ 	position: relative;
+ 	float: left;
+ }
+
+ td {
+ 	font-size: 13px
+ }
+
+ .dataTables_wrapper {
+ 	font-size: 14px
+ }
+
+ .swal2-popup {
+ 	font-size: 1.0rem !important;
+ }
