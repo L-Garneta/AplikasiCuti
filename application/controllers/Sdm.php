@@ -511,4 +511,13 @@ class Sdm extends CI_Controller
         $this->session->set_flashdata('message', 'Simpan Data');
         redirect('sdm/cuti_lain_kaur');
     }
+
+    public function gaji($id_karyawan)
+{
+    $this->load->model('Sdm_model');
+
+    $data['gaji'] = $this->Sdm_model->hitung_gaji($id_karyawan);
+
+    $this->load->view('gaji_view', $data);
+}
 }
