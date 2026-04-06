@@ -27,6 +27,7 @@ class Auth extends CI_Controller
         if ($user) {
             if ($user['is_active'] == 1) {
                 if (password_verify($password, $user['password'])) {
+                    $this->session->unset_userdata('message');
                     $data = [
                         'nama' => $user['nama'],
                         'username' => $user['username'],
@@ -46,15 +47,15 @@ class Auth extends CI_Controller
                         redirect('staf');
                     }
                 } else {
-                    $this->session->set_flashdata('msg', '<div class="alert alert-danger" role="alert">Password salah</div>');
+                    $this->session->set_flashdata('message', 'login_error');
                     redirect('auth/index');
                 }
             } else {
-                $this->session->set_flashdata('msg', '<div class="alert alert-danger" role="alert">User tidak aktif</div>');
+                $this->session->set_flashdata('message', 'User tidak aktif');
                 redirect('auth/index');
             }
         } else {
-            $this->session->set_flashdata('msg', '<div class="alert alert-danger" role="alert">Username dan Password tidak sesuai</div>');
+            $this->session->set_flashdata('message', 'Username dan Password tidak sesuai');
             redirect('auth/index');
         }
     }
