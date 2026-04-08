@@ -202,19 +202,20 @@ class Sdm_model extends CI_Model
         return $this->db->query($query)->result_array();
     }
 
-    public function hitung_gaji($id_karyawan)
+    public function hitung_gaji($id)
 {
-    // ambil data karyawan
-    $karyawan = $this->db->get_where('karyawan', [
-        'id_karyawan' => $id_karyawan
+    // ambil data user
+    $karyawan = $this->db->get_where('mst_user', [
+        'id' => $id
     ])->row();
 
-    // hitung jumlah izin dari tabel cuti
-    $this->db->where('id_karyawan', $id_karyawan);
-    $this->db->where('jenis_cuti', 'izin'); // sesuaikan!
-    $jumlah_izin = $this->db->count_all_results('cuti');
+    // gaji sementara (karena belum ada di DB)
+    $gaji_pokok = 3000000;
 
-    $gaji_pokok = $karyawan->gaji_pokok;
+    // hitung jumlah izin dari form_cuti
+    $this->db->where('user_id', $id); // nanti sesuaikan!
+    $this->db->where('jenis_cuti', 'izin');
+    $jumlah_izin = $this->db->count_all_results('form_cuti');
 
     $potongan_per_hari = $gaji_pokok / 31;
     $total_potongan = $jumlah_izin * $potongan_per_hari;
