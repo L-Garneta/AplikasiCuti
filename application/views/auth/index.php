@@ -4,8 +4,9 @@
         <form action="<?php echo base_url('auth'); ?>" method="post">
             <div class="form-header text-center" Style="font-size:18px;font-weight:700;padding-bottom:15px;">Halaman
                 Login</div>
-            <?php echo $this->session->flashdata('msg'); ?>
-            <div class="flash-data" data-flashdata="<?= $this->session->flashdata('message'); ?>"></div>
+            <?php if ($this->session->flashdata('message')): ?>
+                <div class="flash-data" data-flashdata="<?= $this->session->flashdata('message'); ?>"></div>
+            <?php endif; ?>
             <div class="form-group">
                 <input type="text" class="form-control" name="username" value="<?php echo set_value('username'); ?>"
                     placeholder=" Username" required>
