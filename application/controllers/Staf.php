@@ -273,76 +273,119 @@ class Staf extends CI_Controller
         }
 
         $this->load->library('Pdf');
-        $pdf = new FPDF('p', 'mm', 'A4');
+        $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', 'B', 11);
-        $pdf->Cell(190, 5, 'PERMOHONAN CUTI / IJIN', 0, 1, 'C');
-        $pdf->Ln(10);
-        $pdf->SetFont('Times', '', 11);
-        $pdf->Cell(10, 5, 'Kepada Yth :', 0, 1);
-        $pdf->Cell(10, 5, 'Kabag SDM', 0, 1);
-        $pdf->Cell(10, 5, 'Di tempat.', 0, 1);
-        $pdf->Ln(6);
-        $pdf->Cell(10, 5, 'Dengan hormat,', 0, 1);
-        $pdf->Cell(10, 5, 'Yang bertanda tangan di bawah ini, Saya :', 0, 1);
-        $pdf->Cell(26, 5, 'Nama', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(10, 5, ucwords($row['nama']), 0, 1);
-        $pdf->Cell(26, 5, 'NIK', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(10, 5, $row['nik'], 0, 1);
-        $pdf->Cell(26, 5, 'Bagian', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(20, 5, $row['bagian'], 0, 1);
-        $pdf->Cell(26, 5, 'Jabatan', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(20, 5, $row['jabatan'], 0, 1);
-        $pdf->Ln(3);
-        $pdf->Cell(60, 5, 'Dengan ini mengajukan permohonan : ' . $row['jenis_cuti'] . ', Selama ' . $row['jml_cuti'] . ' hari', 0, 1);
-        $pdf->Cell(100, 5, 'mulai tanggal ' . format_indo($row['cuti']) . ' sampai tanggal ' . format_indo($row['cuti2']) . ', dan bekerja kembali pada tanggal ' . format_indo($row['masuk']) . '.', 0, 1);
-        $pdf->Cell(58, 5, 'Selama cuti/ijin Saya dapat dihubungi ke :', 0, 1);
-        $pdf->Ln(3);
-        $pdf->Cell(26, 5, 'Alamat', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(10, 5, ucwords($row['alamat']), 0, 1);
-        $pdf->Cell(26, 5, 'No. Telp/HP', 0, 0);
-        $pdf->Cell(2, 5, ':', 0, 0);
-        $pdf->Cell(10, 5, $row['telp'], 0, 1);
-        $pdf->Ln(8);
-        $pdf->Cell(95, 5, '', 0, 0, 'C');
-        $pdf->Cell(95, 5, 'Kudus, ' . format_indo($row['input']), 0, 1, 'C');
-        $pdf->Cell(45, 5, 'Menyetujui', 0, 0, 'C');
-        $pdf->Cell(75, 5, '', 0, 0, 'C');
-        $pdf->Cell(45, 5, 'Hormat saya,', 0, 1, 'C');
-        $pdf->Cell(45, 5, 'Atasan Langsung', 0, 0, 'C');
-        $pdf->Ln(30);
-        $pdf->Cell(45, 5, ucwords($row['atasan']), 0, 0, 'C');
-        $pdf->Cell(75, 5, '', 0, 0, 'C');
-        $pdf->Cell(45, 5, ucwords($row['nama']), 0, 1, 'C');
-        $pdf->Ln(10);
-        $pdf->Cell(190, 5, 'Mengetahui,', 0, 1, 'C');
-        $pdf->Cell(190, 5, 'Kepala Bidang / Bagian / Instalasi Terkait,', 0, 1, 'C');
-        $pdf->Ln(20);
-        $pdf->Cell(190, 5, ucwords($row['nama_kabid']), 0, 1, 'C');
-        $pdf->Ln(20);
-        $pdf->Cell(10, 7, 'No', 1, 0, 'C');
-        $pdf->Cell(33, 7, 'Jenis Cuti/Ijin', 1, 0, 'C');
-        $pdf->Cell(20, 7, 'Total Cuti', 1, 0, 'C');
-        $pdf->Cell(20, 7, 'Masih Ada', 1, 0, 'C');
-        $pdf->Cell(20, 7, 'Diambil', 1, 0, 'C');
-        $pdf->Cell(20, 7, 'Sisa Cuti', 1, 0, 'C');
-        $pdf->Cell(65, 7, 'Keterangan', 1, 1, 'C');
-        $pdf->Cell(10, 7, '1', 1, 0, 'C');
-        $pdf->Cell(33, 7, ucwords($row['jenis_cuti']), 1, 0, 'C');
-        $pdf->Cell(20, 7, '12', 1, 0, 'C');
-        $pdf->Cell(20, 7, $row['sisa_cuti'] + $row['jml_cuti'], 1, 0, 'C');
-        $pdf->Cell(20, 7, $row['jml_cuti'], 1, 0, 'C');
-        $pdf->Cell(20, 7, $row['sisa_cuti'], 1, 0, 'C');
-        $pdf->Cell(65, 7, $row['keterangan'], 1, 1, 'C');
+
+        // ================= HEADER =================
+        $pdf->SetFont('Times', 'B', 12);
+        $pdf->Cell(190, 6, 'KLINIK PRATAMA RAWAT INAP', 0, 1, 'C');
+        $pdf->SetFont('Times', 'B', 14);
+        $pdf->Cell(190, 6, '"DARUSSYIFA"', 0, 1, 'C');
+
+        $pdf->SetFont('Times', '', 10);
+        $pdf->Cell(190, 5, 'Jl. Joyoboyo Timur, Ds. Sumbercangkring Kec. Gurah Kab. Kediri', 0, 1, 'C');
+        $pdf->Cell(190, 5, 'Telp. 082336799868  email : klinikdarusyifa@gontor.ac.id', 0, 1, 'C');
+
+        $pdf->Ln(5);
+        $pdf->Cell(190, 0, '', 1, 1); // garis
+        $pdf->Ln(5);
+
+        // ================= JUDUL =================
+        $pdf->SetFont('Times', 'B', 14);
+        $pdf->Cell(190, 7, 'FORMULIR PENGAJUAN CUTI', 0, 1, 'C');
         $pdf->Ln(8);
 
-        $pdf->Output();
+        // ================= DATA PEMOHON =================
+        $pdf->SetFont('Times', '', 11);
+
+        function field($pdf, $label, $value)
+        {
+            $pdf->Cell(60, 7, $label, 0, 0);
+            $pdf->Cell(5, 7, ':', 0, 0);
+            $pdf->Cell(125, 7, $value, 0, 1);
+        }
+
+        field($pdf, 'Nama', $row['nama']);
+        field($pdf, 'NIK', $row['nik']);
+        field($pdf, 'Jabatan', $row['jabatan']);
+        field($pdf, 'Tanggal Diajukan', format_indo($row['input']));
+
+        // tanggal cuti
+        $pdf->Cell(60, 7, 'Cuti Mulai Tanggal', 0, 0);
+        $pdf->Cell(5, 7, ':', 0, 0);
+        $pdf->Cell(50, 7, format_indo($row['cuti']), 0, 0);
+
+        $pdf->Cell(20, 7, 'Sampai', 0, 0);
+        $pdf->Cell(5, 7, ':', 0, 0);
+        $pdf->Cell(50, 7, format_indo($row['cuti2']), 0, 1);
+
+        $pdf->Ln(5);
+
+        // ================= JENIS CUTI =================
+        $pdf->Cell(190, 7, 'Jenis Cuti:', 0, 1);
+
+        function cek($jenis, $value)
+        {
+            return ($jenis == $value) ? '[v]' : '[ ]';
+        }
+
+        $pdf->Cell(60, 7, cek($row['jenis_cuti'], 'Sakit') . ' Cuti Sakit', 0, 0);
+        $pdf->Cell(60, 7, cek($row['jenis_cuti'], 'Khusus') . ' Cuti Khusus', 0, 0);
+        $pdf->Cell(60, 7, cek($row['jenis_cuti'], 'Melahirkan') . ' Cuti Melahirkan', 0, 1);
+
+        $pdf->Cell(60, 7, cek($row['jenis_cuti'], 'Tahunan') . ' Cuti Tahunan', 0, 1);
+
+        $pdf->Ln(5);
+
+        // ================= KETERANGAN =================
+        $pdf->Cell(60, 7, 'Keterangan Cuti', 0, 0);
+        $pdf->Cell(5, 7, ':', 0, 0);
+        $pdf->MultiCell(125, 7, $row['keterangan']);
+
+        $pdf->Ln(3);
+
+        // ================= KONTAK =================
+        $pdf->Cell(60, 7, 'No HP yang dapat dihubungi', 0, 0);
+        $pdf->Cell(5, 7, ':', 0, 0);
+        $pdf->Cell(125, 7, $row['telp'], 0, 1);
+
+        $pdf->Cell(60, 7, 'Alamat yang dapat dihubungi', 0, 0);
+        $pdf->Cell(5, 7, ':', 0, 0);
+        $pdf->MultiCell(125, 7, $row['alamat']);
+
+        $pdf->Ln(10);
+
+        // ================= TANDA TANGAN =================
+        $pdf->Cell(95, 7, 'Kediri, ' . format_indo($row['input']), 0, 1, 'R');
+
+        $pdf->Cell(63, 7, 'Pemohon,', 0, 0, 'C');
+        $pdf->Cell(63, 7, 'Mengetahui,', 0, 0, 'C');
+        $pdf->Cell(63, 7, 'Menyetujui,', 0, 1, 'C');
+
+        $pdf->Cell(63, 7, '', 0, 0);
+        $pdf->Cell(63, 7, 'Bagian SDM', 0, 0, 'C');
+        $pdf->Cell(63, 7, 'Penanggung Jawab Klinik', 0, 1, 'C');
+
+        $pdf->Ln(20);
+
+        $pdf->Cell(63, 7, $row['nama'], 0, 0, 'C');
+        $pdf->Cell(63, 7, 'Elliningtiyas, S.E', 0, 0, 'C');
+        $pdf->Cell(63, 7, 'dr Agung Wibowo', 0, 1, 'C');
+
+        $pdf->Cell(63, 5, '', 0, 0, 'C');
+        $pdf->Cell(63, 5, 'NIK : 2023.11.015', 0, 0, 'C');
+        $pdf->Cell(63, 5, 'NIK : 2023.11.001', 0, 1, 'C');
+
+        $pdf->Ln(10);
+
+        // ================= FOOTER =================
+        $pdf->SetFont('Times', 'I', 10);
+        $pdf->Cell(190, 5, 'Tulus Mengabdi, Ikhlas Melayani', 0, 1, 'C');
+
+        // OUTPUT
+        $pdf->Output()
+
+        ;
     }
 
     public function add_cuti_lain()
