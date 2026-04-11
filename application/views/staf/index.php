@@ -1,5 +1,19 @@
    <!-- Begin Page Content -->
    <div class="container-fluid">
+    <?php
+if (!isset($sisa_cuti) || !$sisa_cuti) {
+    $sisa_cuti = [
+        'is_approve' => null,
+        'kode_unik' => null,
+        'cuti' => null,
+        'cuti2' => null,
+        'keterangan' => null,
+        'jml_cuti' => 0,
+        'sisa_cuti' => 0,
+        'id' => 0
+    ];
+}
+?>
        <div class="flash-data" data-flashdata="<?= $this->session->flashdata('message'); ?>"></div>
        <?php echo $this->session->flashdata('msg'); ?>
        <?php if (validation_errors()) { ?>
@@ -24,9 +38,9 @@
                                <div class="row no-gutters align-items-center">
                                    <div class="col mr-2">
                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Status Pengajuan Cuti</div>
-                                       <?php if ($sisa_cuti['is_approve'] == 2) : ?>
+                                      <?php if (($sisa_cuti['is_approve'] ?? null) == 2) : ?>
                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Cuti Ditolak</div>
-                                       <?php elseif ($sisa_cuti['is_approve'] == 0) : ?>
+                                       <?php elseif (($sisa_cuti['is_approve'] ?? null) == 0) : ?>
                                            <div class="h5 mb-0 font-weight-bold text-gray-800">Cuti Disetujui</div>
                                        <?php else : ?>
                                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo $count; ?> Menunggu</div>
@@ -102,20 +116,20 @@
                        <div class="card border-light mb-3 mr-1">
                            <div class="card-body text-dark">
                                <span class="card-text" style="font-size:20px;"><strong>Status Cuti</strong></span><br>
-                               <?php if ($sisa_cuti['kode_unik'] == NULL) : ?>
+                               <?php if (($sisa_cuti['kode_unik'] ?? null) == NULL) : ?>
                                    <span class="font-weight-bolder">Tidak Ada Data</span>
                                <?php else : ?> <?php if ($sisa_cuti['is_approve'] == 2) : ?> <div class="alert alert-warning" role="alert">
                                            <h5 class="text-danger" style="font-weight:700;"> <strong>CUTI DITOLAK</strong> </h5>
                                            <a href="<?php echo base_url('staf/add_cuti'); ?>" class="btn btn-info btn-sm">Ajukan Ulang</a>
                                            <ul>
                                            <?php else : ?>
-                                               <li> Tanggal :<strong> <?php echo $sisa_cuti['cuti']; ?> s/d <?php echo $sisa_cuti['cuti2']; ?></strong> </li>
-                                               <li> Keterangan : <strong> <?php echo $sisa_cuti['keterangan']; ?></strong></li>
-                                               <li> Ambil Cuti : <strong> <?php echo $sisa_cuti['jml_cuti']; ?> hari</strong></li>
-                                               <li> Sisa Cuti : <strong> <?php echo $sisa_cuti['sisa_cuti']; ?> hari</strong></li>
+                                               <li> Tanggal :<strong> <?php echo $sisa_cuti['cuti'] ?? '-'; ?></strong> </li>
+                                               <li> Keterangan : <strong> <?php echo $sisa_cuti['keterangan'] ?? '-'; ?></strong></li>
+                                               <li> Ambil Cuti : <strong> <?php echo $sisa_cuti['jml_cuti'] ?? 0; ?> hari</strong></li>
+                                               <li> Sisa Cuti : <strong> <?php echo $sisa_cuti['sisa_cuti'] ?? 0; ?> hari</strong></li>
                                                <?php if ($sisa_cuti['is_approve'] == 1) : ?>
                                                    <li><strong>Status : </strong><strong><span class="font-weight-bolder" style="font-size:18px;">Menunggu</span></strong>
-                                                       <strong><a href="<?php echo base_url(); ?>staf/edit_cuti/<?php echo $sisa_cuti['id']; ?>" class="btn btn-dark btn-sm"><i class="fas fa-edit"></i> Edit Data</a></strong></li>
+                                                       <strong><a href="<?php echo base_url(); ?>staf/edit_cuti/<?php echo $sisa_cuti['id'] ?? 0; ?>" class="btn btn-dark btn-sm"><i class="fas fa-edit"></i> Edit Data</a></strong></li>
                                                <?php else : ?>
                                                    <li>Status : <strong><span class="font-weight-bolder" style="font-size:18px;">Disetujui</span></strong>
                                                        <a class="btn btn-primary btn-sm" href="<?php echo base_url(); ?>staf/cetak_data/<?php echo $sisa_cuti['id']; ?>" target="_blank" role="button"><i class="fas fa-print"></i> Cetak Data</a>

@@ -128,7 +128,7 @@ class Sdm_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('form_cuti');
-        $this->db->where('is_approve', 1);
+        $this->db->where('is_approve', 0);
         $this->db->order_by('id', 'DESC');
         $query = $this->db->get()->result_array();
         return $query;
@@ -138,7 +138,7 @@ class Sdm_model extends CI_Model
     {
         $this->db->select('*');
         $this->db->from('formcuti_lain');
-        $this->db->where('is_approve', 1);
+        $this->db->where('is_approve', 0);
         $this->db->order_by('id', 'DESC');
         $query = $this->db->get()->result_array();
         return $query;

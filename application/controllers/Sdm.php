@@ -58,9 +58,26 @@ class Sdm extends CI_Controller
                 'password' => password_hash($this->input->post('password1'), PASSWORD_DEFAULT),
                 'is_active' => 1
             );
-            $this->db->insert('mst_user', $data);
-            $this->session->set_flashdata('message', 'Tambah data');
-            redirect('sdm/index');
+           $this->db->insert('mst_user', $data);
+
+            // 🔥 TAMBAHAN WAJIB
+            $id_user = $this->db->insert_id();
+
+            $data_cuti = [
+                'id_user' => $id_user,
+                'nik' => $this->input->post('nik', true),
+                'nama' => $this->input->post('nama', true),
+                'jabatan' => $this->input->post('jabatan', true),
+                'bagian' => $this->input->post('bagian', true),
+                'sisa_cuti' => 12, // default
+                'keterangan' => 'Karyawan Baru',
+                'input' => date('Y-m-d'),
+                'cuti' => date('Y-m-d'),
+                'cuti2' => date('Y-m-d'),
+                'masuk' => date('Y-m-d')
+            ];
+
+            $this->db->insert('form_cuti', $data_cuti);
         }
     }
 
@@ -377,7 +394,8 @@ class Sdm extends CI_Controller
     public function list_tunggu_cuti_diluartanggungan_kary()
     {
         $data['title'] = 'List Pending Cuti Lain Karyawan';
-        $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
+        $data['user'] = $this->db->get_where('
+        ', ['username' => $this->session->userdata('username')])->row_array();
         $data['cuti_kary'] = $this->sdm->getListCutiPendingLuarTanggungan();
 
         $this->load->view('templates/header', $data);
