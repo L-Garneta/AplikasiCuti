@@ -278,6 +278,7 @@ public function add_cuti()
         $this->load->library('Pdf');
         $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
+        $pdf->Image(FCPATH . 'assets/img/logo.png', 10, 10, 20);
 
         // ================= HEADER =================
         $pdf->SetFont('Times', 'B', 12);
