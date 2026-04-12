@@ -222,6 +222,11 @@ public function add_cuti()
             'masuk' => $this->input->post('masuk'),
             'alamat' => $this->input->post('alamat'),
             'telp' => $this->input->post('telp'),
+
+            // 🔥 TAMBAHAN PENTING
+            'approved_kaur' => 1,
+            'approved_sdm' => 1,
+
             'is_approve' => 1
         ];
 
@@ -410,6 +415,8 @@ public function add_cuti()
             'cuti' => $this->input->post('cuti', true),
             'cuti2' => $this->input->post('cuti2', true),
             'masuk' => $this->input->post('masuk', true),
+           'approved_kaur' => 1,
+            'approved_sdm' => 1,
             'is_approve' => 1
         ];
         $this->db->insert('formcuti_lain', $data);

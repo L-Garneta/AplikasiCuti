@@ -41,7 +41,7 @@
 
                                 <!-- APPROVAL 1 -->
                                 <td>
-                                    <?php if ($ck['approved_kaur'] == 0): ?>
+                                    <?php if (isset($ck['approved_kaur']) && $ck['approved_kaur'] == 0): ?>
                                         <span class="badge badge-success">ACC</span>
                                     <?php elseif ($ck['approved_kaur'] == 2): ?>
                                         <span class="badge badge-danger">Ditolak</span>
@@ -52,7 +52,7 @@
 
                                 <!-- APPROVAL 2 -->
                                 <td>
-                                    <?php if ($ck['approved_sdm'] == 0): ?>
+                                    <?php if (isset($ck['approved_sdm']) && $ck['approved_sdm'] == 0): ?>
                                         <span class="badge badge-success">ACC</span>
                                     <?php elseif ($ck['approved_sdm'] == 2): ?>
                                         <span class="badge badge-danger">Ditolak</span>

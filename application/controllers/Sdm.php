@@ -470,6 +470,10 @@ class Sdm extends CI_Controller
 
     public function approve_cuti_kaur()
     {
+        if ($status == 2) {
+        $this->db->set('approved_sdm', 2);
+        $this->db->set('is_approve', 2); // langsung final ditolak
+}
         $id = $this->input->post('id');
         $status = $this->input->post('is_approve'); // 0=ACC, 2=DITOLAK
 
@@ -500,9 +504,16 @@ class Sdm extends CI_Controller
         return;
     }
 
-    $this->db->set('approved_sdm', $status);
-    $this->db->where('id', $id);
-    $this->db->update('form_cuti');
+   $this->db->set('approved_sdm', $status);
+
+        // 🔥 TAMBAHAN FINAL APPROVAL
+        if ($status == 0) {
+            $this->db->set('is_approve', 0); // final ACC
+        } elseif ($status == 2) {
+            $this->db->set('is_approve', 2); // final ditolak
+        }
+            $this->db->where('id', $id);
+            $this->db->update('form_cuti');
 
     $this->session->set_flashdata('message', 'Approval SDM berhasil');
     redirect('sdm/cuti_sdm');
