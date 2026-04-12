@@ -23,7 +23,6 @@
                             <th scope="col">Detail</th>
                             <th scope="col">Data</th>
                             <th scope="col">Keluarga</th>
-                            <th scope="col">Gaji</th> <!-- TAMBAHAN -->
                         </tr>
                     </thead>
                     <tbody>
@@ -46,15 +45,6 @@
                                     <td><button class="btn btn-light btn-block btn-sm"><i class="far fa-check-circle"></i> Sudah Input</button></td>
                                 <?php endif; ?>
                                 <td><button class="tombol-edit btn btn-info btn-block btn-sm" data-id="<?php echo $p['id']; ?>" data-toggle="modal" data-target="#keluarga"><i class="fas fa-plus-circle"></i> Keluarga</button></td>
-
-                                <!-- TAMBAHAN TOMBOL GAJI -->
-                                <td>
-                                    <a href="<?= base_url('sdm/gaji/'.$p['id']); ?>" 
-                                       class="btn btn-success btn-block btn-sm">
-                                       <i class="fas fa-money-bill"></i> Gaji
-                                    </a>
-                                </td>
-
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

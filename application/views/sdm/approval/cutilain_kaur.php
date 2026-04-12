@@ -26,6 +26,8 @@
                              <th scope="col">Tgl Cuti 2</th>
                              <th scope="col">Tgl Masuk</th>
                              <th scope="col">Opsi</th>
+                             <th scope="col">Approval 1</th>
+                             <th scope="col">Approval 2</th>    
                          </tr>
                      </thead>
                      <tbody>

@@ -69,7 +69,7 @@ class Sdm extends CI_Controller
         $upload_image = $_FILES['image']['name'];
         if ($upload_image) {
             $config['allowed_types'] = 'gif|jpg|png|jpeg';
-            $config['max_size']     = '2048';
+            $config['max_size'] = '2048';
             $config['upload_path'] = './assets/img/profile';
             $this->load->library('upload', $config);
             if ($this->upload->do_upload('image')) {
@@ -160,8 +160,13 @@ class Sdm extends CI_Controller
             'input' => date('Y-m-d'),
             'cuti' => date('Y-m-d'),
             'cuti2' => date('Y-m-d'),
-            'masuk' => date('Y-m-d')
+            'masuk' => date('Y-m-d'),
+
+            // ✅ DEFAULT MENUNGGU
+            'approved_kaur' => 1,
+            'approved_sdm' => 1
         ];
+
         $this->db->insert('form_cuti', $data);
         $this->session->set_flashdata('message', 'Simpan data');
         redirect('sdm/index');
@@ -447,25 +452,43 @@ class Sdm extends CI_Controller
 
     public function approve_cuti_kaur()
     {
-        $nama_atasan = $this->session->userdata('nama');
         $id = $this->input->post('id');
-        $nama_kabid = $this->input->post('nama_kabid');
-        $alasan_ditolak = $this->input->post('alasan_ditolak');
-        $atasan = $nama_atasan;
-        $is_approve = $this->input->post('is_approve');
+        $status = $this->input->post('is_approve'); // 0=ACC, 2=DITOLAK
 
-        $this->db->set('nama_kabid', $nama_kabid);
-        $this->db->set('atasan', $atasan);
-        $this->db->set('alasan_ditolak', $alasan_ditolak);
-        $this->db->set('is_approve', $is_approve);
+        $this->db->set('approved_kaur', $status);
+
+        // ❌ kalau KAUR tolak → langsung tolak semua
+        if ($status == 2) {
+            $this->db->set('approved_sdm', 2);
+        }
+
         $this->db->where('id', $id);
         $this->db->update('form_cuti');
 
-        $this->session->set_flashdata('message', 'Simpan Data');
+        $this->session->set_flashdata('message', 'Approval KAUR berhasil');
         redirect('sdm/cuti_kaur');
     }
+    public function approve_cuti_sdm()
+{
+    $id = $this->input->post('id');
+    $status = $this->input->post('is_approve');
 
+    $cuti = $this->db->get_where('form_cuti', ['id' => $id])->row_array();
 
+    // ❌ belum di-ACC KAUR
+    if ($cuti['approved_kaur'] != 0) {
+        $this->session->set_flashdata('msg', '<div class="alert alert-danger">Harus disetujui KAUR dulu!</div>');
+        redirect('sdm/cuti_sdm');
+        return;
+    }
+
+    $this->db->set('approved_sdm', $status);
+    $this->db->where('id', $id);
+    $this->db->update('form_cuti');
+
+    $this->session->set_flashdata('message', 'Approval SDM berhasil');
+    redirect('sdm/cuti_sdm');
+}
     public function cuti_lain_kaur()
     {
         $data['title'] = 'Cuti Lain Staf';
@@ -511,13 +534,4 @@ class Sdm extends CI_Controller
         $this->session->set_flashdata('message', 'Simpan Data');
         redirect('sdm/cuti_lain_kaur');
     }
-
-    public function gaji($id_karyawan)
-{
-    $this->load->model('Sdm_model');
-
-    $data['gaji'] = $this->Sdm_model->hitung_gaji($id_karyawan);
-
-    $this->load->view('gaji_view', $data);
-}
 }
