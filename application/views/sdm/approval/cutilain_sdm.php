@@ -16,7 +16,7 @@
                             <th>#</th>
                             <th>Nama</th>
                             <th>NIK</th>
-                            <th>Cuti</th>
+                            <th>Jenis Cuti</th><th>Cuti</th>
                             <th>Sampai</th>
                             <th>Masuk</th>
                             <th>Status</th>
@@ -31,12 +31,12 @@
                                 <td><?= $i++; ?></td>
                                 <td><?= $c['nama']; ?></td>
                                 <td><?= $c['nik']; ?></td>
-                                <td><?= format_indo($c['cuti']); ?></td>
+                                <td><?= $c['jenis_cuti']; ?></td><td><?= format_indo($c['cuti']); ?></td>
                                 <td><?= format_indo($c['cuti2']); ?></td>
                                 <td><?= format_indo($c['masuk']); ?></td>
 
                                 <td>
-                                    <span class="badge badge-warning">Pending KAUR</span>
+                                    <span class="badge badge-warning">Pending Pj. Klinik</span>
                                 </td>
 
                                 <td>
@@ -59,17 +59,17 @@
     </div>
 </div>
 
-<!-- MODAL KAUR -->
+<!-- MODAL SDM -->
 <div class="modal fade" id="modal-approval" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Approval KAUR</h5>
+                <h5 class="modal-title">Approval Penanggung Jawab Klinik</h5>
             </div>
 
             <div class="modal-body">
-                <form action="<?= base_url('sdm/approve_cuti_kaur'); ?>" method="post">
+                <form action="<?= base_url('sdm/approve_cutilain_sdm'); ?>" method="post">
 
                     <input type="hidden" name="id" id="id">
 

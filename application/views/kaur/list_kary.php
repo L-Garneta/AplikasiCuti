@@ -37,7 +37,7 @@
                                 <?php if (!isset($p['pegawai_id']) || $p['pegawai_id'] == NULL) : ?>
                                     <td><button class="btn btn-light btn-block btn-sm"><i class="far fa-times-circle"></i> No Data</button></td>
                                 <?php else : ?>
-                                    <td><a href="<?php echo base_url('sdm/view_kary/' . $p['id']); ?>" class="btn btn-info btn-sm btn-block"><i class="fas fa-info-circle"></i> Detail</td>
+                                    <td><a href="<?php echo base_url('kaur/view_kary/' . $p['id']); ?>" class="btn btn-info btn-sm btn-block"><i class="fas fa-info-circle"></i> Detail</td>
                                 <?php endif; ?>
                                 <?php if (!isset($p['pegawai_id']) || $p['pegawai_id'] == NULL) : ?>
                                     <td><button class="tombol-edit btn btn-info btn-block btn-sm" data-id="<?php echo $p['id']; ?>" data-toggle="modal" data-target="#edit-user"><i class="fas fa-plus-circle"></i> Data</button></td>
@@ -63,7 +63,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Data Karyawan</h5>
             </div>
             <div class="modal-body">
-                <form action="<?php echo base_url('sdm/list_kary'); ?>" method="post">
+                <form action="<?php echo base_url('kaur/list_kary'); ?>" method="post">
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -173,7 +173,7 @@
                 <h5 class="modal-title" id="exampleModalLabel">Tambah Data Keluarga</h5>
             </div>
             <div class="modal-body">
-                <form action="<?php echo base_url('sdm/add_keluarga'); ?>" method="post">
+                <form action="<?php echo base_url('kaur/add_keluarga'); ?>" method="post">
                     <div class="form-group">
                         <label>Nama Karyawan</label>
                         <input type="hidden" name="pegawai_id" id="id_pegawai">
@@ -234,7 +234,7 @@
     $('.tombol-edit').on('click', function() {
         const id = $(this).data('id');
         $.ajax({
-            url: '<?php echo base_url('sdm/get_user'); ?>',
+            url: '<?php echo base_url('kaur/get_user'); ?>',
             data: {
                 id: id
             },
