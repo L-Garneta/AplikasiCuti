@@ -11,40 +11,64 @@ class Staf extends CI_Controller
         $this->load->model('Staf_model', 'user_cuti');
     }
     public function index()
-    {
-        $data['title'] = 'Dashboard';
-        $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
-        $data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->row_array();
-        $data['sisa_cuti'] = $this->user_cuti->getSisaCuti();
-        $id = $this->session->userdata('id');
-        $id_user = $this->session->userdata('id');
-        $data['cuti_user'] = $this->user_cuti->getCutiUser($id_user);
-        $data['cuti_lain_user'] = $this->user_cuti->getCutiLainUser($id_user);
+{
+    $data['title'] = 'Dashboard';
 
-        // hitung output Cuti count
-        $query = $this->user_cuti->cuti_count($id);
-        $data['count'] = $query->pending;
-        $record = $this->db->get("form_cuti");
-        $data['records'] = $record->result();
+    // Ambil user login
+    $data['user'] = $this->db->get_where('mst_user', [
+        'username' => $this->session->userdata('username')
+    ])->row_array();
 
-        // COunt History Cuti
-        $query = $this->user_cuti->historyCutiCount($id);
-        $data['history_count'] = $query->pending;
-        $record = $this->db->get("form_cuti");
-        $data['records'] = $record->result();
+    $id_user = $this->session->userdata('id');
 
-        // COunt History Cuti
-        $query = $this->user_cuti->historyCutiLainCount($id);
-        $data['history_countcutilain'] = $query->pending;
-        $record = $this->db->get("formcuti_lain");
-        $data['records'] = $record->result();
+    // ================== USER CUTI ==================
+    $user_cuti = $this->db->get_where('form_cuti', [
+        'id_user' => $id_user
+    ])->row_array();
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('templates/topbar', $data);
-        $this->load->view('staf/index', $data);
-        $this->load->view('templates/footer');
+    // Jika belum ada data cuti → kasih default
+    if (!$user_cuti) {
+        $user_cuti = [
+            'sisa_cuti' => 0,
+            'jml_cuti' => 0,
+            'keterangan' => '-',
+            'cuti' => null,
+            'cuti2' => null,
+            'masuk' => null
+        ];
     }
+
+    $data['user_cuti'] = $user_cuti;
+
+    // ================== SISA CUTI ==================
+    $data['sisa_cuti'] = $this->user_cuti->getSisaCuti() ?? 0;
+
+    // ================== LIST CUTI ==================
+    $data['cuti_user'] = $this->user_cuti->getCutiUser($id_user) ?? [];
+    $data['cuti_lain_user'] = $this->user_cuti->getCutiLainUser($id_user) ?? [];
+
+    // ================== COUNT CUTI ==================
+    $query = $this->user_cuti->cuti_count($id_user);
+    $data['count'] = ($query && isset($query->pending)) ? $query->pending : 0;
+
+    // ================== HISTORY CUTI ==================
+    $query = $this->user_cuti->historyCutiCount($id_user);
+    $data['history_count'] = ($query && isset($query->pending)) ? $query->pending : 0;
+
+    // ================== HISTORY CUTI LAIN ==================
+    $query = $this->user_cuti->historyCutiLainCount($id_user);
+    $data['history_countcutilain'] = ($query && isset($query->pending)) ? $query->pending : 0;
+
+    // ================== RECORDS ==================
+    $data['records'] = $this->db->get("form_cuti")->result() ?? [];
+
+    // ================== LOAD VIEW ==================
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/sidebar', $data);
+    $this->load->view('templates/topbar', $data);
+    $this->load->view('staf/index', $data);
+    $this->load->view('templates/footer');
+}
 
     public function edit()
     {
@@ -77,8 +101,11 @@ class Staf extends CI_Controller
         $this->db->set('jabatan', $jabatan);
         $this->db->set('bagian', $bagian);
         $this->db->set('nik', $nik);
-        $this->db->where('username', $username);
+        $this->db->set('username', $username);
+        $this->db->where('id', $this->session->userdata('id'));
         $this->db->update('mst_user');
+        
+        $this->session->set_userdata('username', $username);
 
         $this->session->set_flashdata('message', 'Simpan Perubahan');
         redirect('staf/index');
@@ -114,119 +141,103 @@ class Staf extends CI_Controller
         $this->load->view('templates/footer');
     }
 
-    public function add_cuti()
-    {
-        $this->form_validation->set_rules('input', 'Tanggal', 'required|trim');
-        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim');
-        $this->form_validation->set_rules('jml_cuti', 'Ambil cuti', 'required|trim|numeric|greater_than[0]');
-        $this->form_validation->set_rules('sisa_cuti', 'Sisa Cuti', 'required|trim|greater_than[-1]');
-        $this->form_validation->set_rules('cuti', 'Tanggal Cuti 1', 'required|trim');
-        $this->form_validation->set_rules('cuti2', 'Tanggal Cuti 2', 'required|trim');
-        $this->form_validation->set_rules('masuk', 'Tanggal Masuk', 'required|trim');
-        $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim');
-        $this->form_validation->set_rules('telp', 'No Telp', 'required|trim');
+public function add_cuti()
+{
+    $this->form_validation->set_rules('input', 'Tanggal', 'required|trim');
+    $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim');
+    $this->form_validation->set_rules('jml_cuti', 'Ambil cuti', 'required|trim|numeric|greater_than[0]');
+    $this->form_validation->set_rules('sisa_cuti', 'Sisa Cuti', 'required|trim|greater_than[-1]');
+    $this->form_validation->set_rules('cuti', 'Tanggal Cuti 1', 'required|trim');
+    $this->form_validation->set_rules('cuti2', 'Tanggal Cuti 2', 'required|trim');
+    $this->form_validation->set_rules('masuk', 'Tanggal Masuk', 'required|trim');
+    $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim');
+    $this->form_validation->set_rules('telp', 'No Telp', 'required|trim');
 
-        if ($this->form_validation->run() == false) {
-            $data['title'] = 'Input Cuti';
-            $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
-            $data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->row_array();
-            $data['kode_unik'] = $this->user_cuti->getKodeUnik();
-            $data['kode_unik2'] = $this->user_cuti->getKodeUnik2();
+    if ($this->form_validation->run() == false) {
 
-            $id = $this->session->userdata('id');
-            $data['null_cuti'] = $this->user_cuti->getNullCuti($id);
-            $data['sisa_cuti'] = $this->user_cuti->getSisaCuti();
+        $data['title'] = 'Input Cuti';
 
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
-            $this->load->view('staf/add_cuti', $data);
-            $this->load->view('templates/footer');
-        } else {
-            $data = [
-                'id_user' => $this->input->post('id_user'),
-                'kode_unik' => $this->input->post('kode_unik'),
-                'role_id' => $this->input->post('role_id'),
-                'input' => $this->input->post('input'),
-                'nik' => $this->input->post('nik'),
-                'nama' => $this->input->post('nama'),
-                'bagian' => $this->input->post('bagian'),
-                'jabatan' => $this->input->post('jabatan'),
-                'jenis_cuti' => $this->input->post('jenis_cuti'),
-                'keterangan' => $this->input->post('keterangan'),
-                'jml_cuti' => $this->input->post('jml_cuti'),
-                'sisa_cuti' => $this->input->post('sisa_cuti'),
-                'cuti' => $this->input->post('cuti'),
-                'cuti2' => $this->input->post('cuti2'),
-                'masuk' => $this->input->post('masuk'),
-                'alamat' => $this->input->post('alamat'),
-                'telp' => $this->input->post('telp'),
-                'is_approve' => 1
+        $data['user'] = $this->db->get_where('mst_user', [
+            'username' => $this->session->userdata('username')
+        ])->row_array();
+
+        // =========================
+        // 🔥 FIX 1: user_cuti NULL
+        // =========================
+        $data['user_cuti'] = $this->db->get_where('form_cuti', [
+            'id_user' => $this->session->userdata('id')
+        ])->row_array();
+
+        if (!$data['user_cuti']) {
+            $data['user_cuti'] = [
+                'alamat' => '',
+                'telp' => '',
+                'keterangan' => '',
+                'sisa_cuti' => 12,
+                'jml_cuti' => 0,
+                'is_approve' => 0
             ];
-            $this->db->insert('form_cuti', $data);
-            $this->session->set_flashdata('message', 'Simpan data');
-            redirect('staf');
         }
-    }
 
-    public function edit_cuti()
-    {
-        $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim');
-        $this->form_validation->set_rules('jml_cuti', 'Ambil cuti', 'required|trim|numeric|greater_than[0]');
-        $this->form_validation->set_rules('sisa_cuti', 'Sisa Cuti', 'required|trim|greater_than[-1]');
-        $this->form_validation->set_rules('cuti', 'Tanggal Cuti 1', 'required|trim');
-        $this->form_validation->set_rules('cuti2', 'Tanggal Cuti 2', 'required|trim');
-        $this->form_validation->set_rules('masuk', 'Tanggal Masuk', 'required|trim');
-        $this->form_validation->set_rules('alamat', 'Alamat', 'required|trim');
-        $this->form_validation->set_rules('telp', 'No Telp', 'required|trim');
+        // =========================
+        // 🔥 FIX 2: sisa_cuti NULL
+        // =========================
+        $data['sisa_cuti'] = $this->user_cuti->getSisaCuti();
 
-        if ($this->form_validation->run() == false) {
-            $data['title'] = 'Edit Cuti';
-            $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
-            $data['sisa_cuti'] = $this->user_cuti->getSisaCuti();
-
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
-            $this->load->view('staf/edit_cuti', $data);
-            $this->load->view('templates/footer');
-        } else {
-
-            $id = $this->input->post('id');
-            $nama = $this->input->post('nama');
-            $jabatan = $this->input->post('jabatan');
-            $bagian = $this->input->post('bagian');
-            $nik = $this->input->post('nik');
-            $keterangan = $this->input->post('keterangan');
-            $jenis_cuti = $this->input->post('jenis_cuti');
-            $jml_cuti = $this->input->post('jml_cuti');
-            $sisa_cuti = $this->input->post('sisa_cuti');
-            $cuti = $this->input->post('cuti');
-            $cuti2 = $this->input->post('cuti2');
-            $masuk = $this->input->post('masuk');
-            $alamat = $this->input->post('alamat');
-            $telp = $this->input->post('telp');
-
-            $this->db->set('nama', $nama);
-            $this->db->set('jabatan', $jabatan);
-            $this->db->set('bagian', $bagian);
-            $this->db->set('nik', $nik);
-            $this->db->set('keterangan', $keterangan);
-            $this->db->set('jenis_cuti', $jenis_cuti);
-            $this->db->set('jml_cuti', $jml_cuti);
-            $this->db->set('sisa_cuti', $sisa_cuti);
-            $this->db->set('cuti', $cuti);
-            $this->db->set('cuti2', $cuti2);
-            $this->db->set('masuk', $masuk);
-            $this->db->set('alamat', $alamat);
-            $this->db->set('telp', $telp);
-            $this->db->where('id', $id);
-            $this->db->update('form_cuti');
-
-            $this->session->set_flashdata('message', 'Update data');
-            redirect('staf');
+        if (!$data['sisa_cuti']) {
+            $data['sisa_cuti'] = [
+                'is_approve' => 0,
+                'sisa_cuti' => 12,
+                'jml_cuti' => 0,
+                'keterangan' => ''
+            ];
         }
+
+        $data['kode_unik'] = $this->user_cuti->getKodeUnik();
+        $data['kode_unik2'] = $this->user_cuti->getKodeUnik2();
+
+        $id = $this->session->userdata('id');
+        $data['null_cuti'] = $this->user_cuti->getNullCuti($id);
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('staf/add_cuti', $data);
+        $this->load->view('templates/footer');
+
+    } else {
+
+        $data = [
+            'id_user' => $this->input->post('id_user'),
+            'kode_unik' => $this->input->post('kode_unik'),
+            'role_id' => $this->input->post('role_id'),
+            'input' => $this->input->post('input'),
+            'nik' => $this->input->post('nik'),
+            'nama' => $this->input->post('nama'),
+            'bagian' => $this->input->post('bagian'),
+            'jabatan' => $this->input->post('jabatan'),
+            'jenis_cuti' => $this->input->post('jenis_cuti'),
+            'keterangan' => $this->input->post('keterangan'),
+            'jml_cuti' => $this->input->post('jml_cuti'),
+            'sisa_cuti' => $this->input->post('sisa_cuti'),
+            'cuti' => $this->input->post('cuti'),
+            'cuti2' => $this->input->post('cuti2'),
+            'masuk' => $this->input->post('masuk'),
+            'alamat' => $this->input->post('alamat'),
+            'telp' => $this->input->post('telp'),
+
+            // 🔥 TAMBAHAN PENTING
+            'approved_kaur' => 1,
+            'approved_sdm' => 1,
+
+            'is_approve' => 1
+        ];
+
+        $this->db->insert('form_cuti', $data);
+        $this->session->set_flashdata('message', 'Simpan data');
+        redirect('staf');
     }
+}
 
     public function history()
     {
@@ -400,6 +411,7 @@ class Staf extends CI_Controller
             'nama' => $this->input->post('nama', true),
             'jabatan' => $this->input->post('jabatan', true),
             'bagian' => $this->input->post('bagian', true),
+            'jml_cuti' => $this->input->post('jml_cuti', true),
             'keterangan' => $this->input->post('keterangan', true),
             'alamat' => $this->input->post('alamat', true),
             'jenis_cuti' => $this->input->post('jenis_cuti', true),
@@ -407,6 +419,8 @@ class Staf extends CI_Controller
             'cuti' => $this->input->post('cuti', true),
             'cuti2' => $this->input->post('cuti2', true),
             'masuk' => $this->input->post('masuk', true),
+           'approved_kaur' => 1,
+            'approved_sdm' => 1,
             'is_approve' => 1
         ];
         $this->db->insert('formcuti_lain', $data);

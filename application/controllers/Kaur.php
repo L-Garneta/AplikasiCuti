@@ -14,46 +14,14 @@ class Kaur extends CI_Controller
 
 	public function index()
 	{
-		$data['title'] = 'Dashboard';
+		$data['title'] = 'Beranda';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
-		$data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->row_array();
-		$data['sisa_cuti'] = $this->user_cuti->getSisaCuti();
-		$data['cuti_saya'] = $this->user_cuti->getCutiSayaLimit();
-		$data['cuti_lain_saya'] = $this->user_cuti->getCutiLainSayaLimit();
 
-		$id = $this->session->userdata('id');
-		// hitung output Cuti count
-		$query = $this->user_cuti->cuti_count($id);
-		$data['count'] = $query->pending;
-		$record = $this->db->get("form_cuti");
-		$data['records'] = $record->result();
-
-		// COunt History Cuti
-		$query = $this->user_cuti->historyCutiCount($id);
-		$data['history_count'] = $query->pending;
-		$record = $this->db->get("form_cuti");
-		$data['records'] = $record->result();
-
-		// Count staf Cuti
-		$bagian = $this->session->userdata('bagian');
-		$query = $this->user_cuti->stafCutiCount($bagian);
-		$data['stafcuti_count'] = $query->pending;
-		$record = $this->db->get("form_cuti");
-		$data['records'] = $record->result();
-
-		// Count staf Cuti Lain
-		$bagian = $this->session->userdata('bagian');
-		$query = $this->user_cuti->stafCutiLainCount($bagian);
-		$data['stafcutilain_count'] = $query->pending;
-		$record = $this->db->get("formcuti_lain");
-		$data['records'] = $record->result();
-		// Count Sisa cuti=0
-		$bagian = $this->session->userdata('bagian');
-		$query = $this->user_cuti->sisaCutiCount($bagian);
-		$data['sisacuti_count'] = $query->pending;
-		$record = $this->db->get("form_cuti");
-		$data['records'] = $record->result();
-
+		$data['count_cuti_tahunan'] = $this->db->where('is_approve', 0)->count_all_results('form_cuti');
+		$data['count_cuti_luartanggungan'] = $this->db->where('is_approve', 0)->count_all_results('formcuti_lain');
+		$data['count_cuti_ditolak'] = $this->db->where('is_approve', 2)->count_all_results('form_cuti');
+		$data['count_user'] = $this->db->count_all('mst_user');
+		$data['pegawai'] = $this->db->get('mst_user')->result_array();
 
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/sidebar', $data);
@@ -105,8 +73,10 @@ class Kaur extends CI_Controller
 		$this->db->set('jabatan', $jabatan);
 		$this->db->set('bagian', $bagian);
 		$this->db->set('nik', $nik);
-		$this->db->where('username', $username);
+		$this->db->set('username', $username);
+		$this->db->where('id', $this->session->userdata('id'));
 		$this->db->update('mst_user');
+		$this->session->set_userdata('username', $username);
 
 		$this->session->set_flashdata('message', 'Simpan Perubahan');
 		redirect('kaur/index');
@@ -367,7 +337,7 @@ class Kaur extends CI_Controller
 
 	public function cuti_staf()
 	{
-		$data['title'] = 'Cuti Tahunan Staf';
+		$data['title'] = 'Approval Cuti Bulanan (Jatah Sebulan Sekali)';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
 		$data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->result_array();
 
@@ -383,9 +353,9 @@ class Kaur extends CI_Controller
 
 	public function cutilain_staf()
 	{
-		$data['title'] = 'Cuti Lain Staf';
+		$data['title'] = 'Approval Cuti (Menikah, Melahirkan, dll)';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
-		$data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->result_array();
+		$data['user_cuti'] = $this->db->get_where('formcuti_lain', ['id_user' => $this->session->userdata('id')])->result_array();
 
 		$bagian = $this->session->userdata('bagian');
 		$data['staf_cutilain'] = $this->user_cuti->getListCutiLainStaf($bagian);
@@ -407,15 +377,24 @@ class Kaur extends CI_Controller
 	{
 		$nama_atasan = $this->session->userdata('nama');
 		$id = $this->input->post('id');
-		$nama_kabid = $this->input->post('nama_kabid');
 		$alasan_ditolak = $this->input->post('alasan_ditolak');
-		$atasan = $nama_atasan;
-		$is_approve = $this->input->post('is_approve');
+		$status = $this->input->post('is_approve'); // 0=ACC, 2=TOLAK
 
-		$this->db->set('nama_kabid', $nama_kabid);
-		$this->db->set('atasan', $atasan);
+		$this->db->set('atasan', $nama_atasan);
 		$this->db->set('alasan_ditolak', $alasan_ditolak);
-		$this->db->set('is_approve', $is_approve);
+
+        // 🔥 Logika Alur Tahap 1 KAUR
+        $this->db->set('approved_kaur', $status);
+        if ($status == 0) {
+            // ✅ KAUR ACC -> Lanjut ke SDM
+            $this->db->set('approved_sdm', 1);
+            $this->db->set('is_approve', 1);
+        } else {
+            // ❌ KAUR TOLAK -> Langsung Final Tolak
+            $this->db->set('approved_sdm', 2);
+            $this->db->set('is_approve', 2);
+        }
+
 		$this->db->where('id', $id);
 		$this->db->update('form_cuti');
 
@@ -433,25 +412,22 @@ class Kaur extends CI_Controller
 	{
 		$nama_atasan = $this->session->userdata('nama');
 		$id = $this->input->post('id');
-		$atasan = $nama_atasan;
-		$is_approve = $this->input->post('is_approve');
-		$kabag = $this->input->post('kabag');
-		$nama_kabag = $this->input->post('nama_kabag');
-		$direktur = $this->input->post('direktur');
-		$nama_direktur = $this->input->post('nama_direktur');
 		$alasan_ditolak = $this->input->post('alasan_ditolak');
+		$status = $this->input->post('is_approve'); // 0=ACC, 2=TOLAK
 
-		$this->db->set('atasan', $atasan);
-		$this->db->set('is_approve', $is_approve);
-		$this->db->set('kabag', $kabag);
-		$this->db->set('nama_kabag', $nama_kabag);
-		$this->db->set('direktur', $direktur);
-		$this->db->set('nama_direktur', $nama_direktur);
+		$this->db->set('atasan', $nama_atasan);
 		$this->db->set('alasan_ditolak', $alasan_ditolak);
+		$this->db->set('approved_kaur', $status);
+		if ($status == 0) {
+			$this->db->set('approved_sdm', 1);
+			$this->db->set('is_approve', 1);
+		} else {
+			$this->db->set('approved_sdm', 2);
+			$this->db->set('is_approve', 2);
+		}
 
 		$this->db->where('id', $id);
 		$this->db->update('formcuti_lain');
-
 		$this->session->set_flashdata('message', 'Simpan Data');
 		redirect('kaur/cutilain_staf');
 	}
@@ -742,4 +718,127 @@ class Kaur extends CI_Controller
 		$this->load->view('kaur/data/view_cutitahunan', $data);
 		$this->load->view('templates/footer');
 	}
+    // ======================================
+    // DUPLIKAT DARI SDM 
+    // ======================================
+
+    public function list_kary()
+    {
+        $data['title'] = 'List Karyawan';
+        $data['user'] = $this->db->get_where('mst_user', [
+            'username' => $this->session->userdata('username')
+        ])->row_array();
+
+        $data['pegawai'] = $this->db->get('mst_user')->result_array();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/list_kary', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function view_kary($id)
+    {
+        $data['title'] = 'Detail Karyawan';
+        $data['user'] = $this->db->get_where('mst_user', [
+            'username' => $this->session->userdata('username')
+        ])->row_array();
+
+        $this->db->where('mst_user.id', $id);
+        $this->db->select('*');
+        $this->db->from('mst_user');
+        $this->db->join('data_pegawai', 'data_pegawai.pegawai_id = mst_user.id', 'left');
+        $data['pegawai'] = $this->db->get()->row_array();
+
+        $data['keluarga'] = $this->db->get_where('keluarga_pegawai', ['pegawai_id' => $id])->result_array();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/view_kary', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function get_user()
+    {
+        $id = $this->input->post('id');
+        echo json_encode($this->db->get_where('mst_user', ['id' => $id])->row_array());
+    }
+
+    public function add_keluarga()
+    {
+        $data = [
+            'pegawai_id' => $this->input->post('pegawai_id'),
+            'nama_keluarga' => $this->input->post('nama_keluarga'),
+            'posisi_keluarga' => $this->input->post('posisi_keluarga'),
+            'tempat_lahir' => $this->input->post('tempat_lahir_keluarga'),
+            'tgl_lahir' => $this->input->post('tgl_lahir_keluarga'),
+            'alamat' => $this->input->post('alamat_keluarga'),
+            'telp' => $this->input->post('telp_keluarga')
+        ];
+        $this->db->insert('keluarga_pegawai', $data);
+        $this->session->set_flashdata('message', 'Data keluarga berhasil ditambah');
+        redirect('kaur/list_kary');
+    }
+
+    public function list_cuti_kary()
+    {
+        $data['title'] = 'List Cuti Karyawan';
+        $data['user'] = $this->db->get_where('mst_user', [
+            'username' => $this->session->userdata('username')
+        ])->row_array();
+
+        $data['cuti_kary'] = $this->db->get('form_cuti')->result_array();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/list_cuti_kary', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function list_cuti_diluartanggungan_kary()
+    {
+        $data['title'] = 'Cuti Diluar Tanggungan';
+        $data['user'] = $this->db->get_where('mst_user', [
+            'username' => $this->session->userdata('username')
+        ])->row_array();
+
+        $data['cuti_kary'] = $this->db->get('formcuti_lain')->result_array();
+
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/list_cuti_diluartanggungan_kary', $data);
+        $this->load->view('templates/footer');
+    }
+
+
+    public function detail_cuti($id)
+    {
+        $data['title'] = 'Detail Cuti Bulanan';
+        $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
+        $data['cuti_pegawai'] = $this->db->get_where('form_cuti', ['id' => $id])->result_array();
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/detail_cuti', $data);
+        $this->load->view('templates/footer');
+    }
+
+    public function detail_cuti_diluartanggungan($id)
+    {
+        $data['title'] = 'Detail Cuti Lain';
+        $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
+        $data['cuti_pegawai'] = $this->db->get_where('formcuti_lain', ['id' => $id])->result_array();
+        
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/sidebar', $data);
+        $this->load->view('templates/topbar', $data);
+        $this->load->view('kaur/detail_cuti_diluartanggungan', $data);
+        $this->load->view('templates/footer');
+    }
+
 }

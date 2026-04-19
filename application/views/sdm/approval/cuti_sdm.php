@@ -36,11 +36,11 @@
                                 <td><?= format_indo($c['masuk']); ?></td>
 
                                 <td>
-                                    <span class="badge badge-warning">Pending KAUR</span>
+                                    <span class="badge badge-warning">Pending Pj. Klinik</span>
                                 </td>
 
                                 <td>
-                                    <a href="<?= base_url('kaur/detail_cuti/' . $c['id']); ?>" class="btn btn-info btn-sm">Detail</a>
+                                    <a href="<?= base_url('sdm/detail_cuti/' . $c['id']); ?>" class="btn btn-info btn-sm">Detail</a>
                                     <button class="btn btn-primary btn-sm btn-approve"
                                         data-id="<?= $c['id']; ?>"
                                         data-nama="<?= $c['nama']; ?>"
@@ -60,17 +60,17 @@
     </div>
 </div>
 
-<!-- MODAL KAUR -->
+<!-- MODAL SDM -->
 <div class="modal fade" id="modal-approval" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
             <div class="modal-header">
-                <h5 class="modal-title">Approval KAUR</h5>
+                <h5 class="modal-title">Approval Penanggung Jawab Klinik</h5>
             </div>
 
             <div class="modal-body">
-                <form action="<?= base_url('sdm/approve_cuti_kaur'); ?>" method="post">
+                <form action="<?= base_url('sdm/approve_cuti_sdm'); ?>" method="post">
 
                     <input type="hidden" name="id" id="id">
 

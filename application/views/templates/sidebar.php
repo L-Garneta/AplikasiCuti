@@ -24,7 +24,15 @@
     <?php foreach ($menu as $m) : ?>
         <!-- Heading -->
         <div class="sidebar-heading">
-            <?php echo $m['menu']; ?>
+            <?php 
+                if (strtolower($m['menu']) == 'sdm') {
+                    echo 'Penanggung Jawab Klinik';
+                } elseif (strtolower($m['menu']) == 'kaur') {
+                    echo 'SDM';
+                } else {
+                    echo $m['menu']; 
+                }
+            ?>
         </div>
 
         <!-- siapkan submenu sesuai menu -->

@@ -62,7 +62,7 @@
                                 </td>
 
                                 <!-- OPSI -->
-                                <td><a href="<?php echo base_url('sdm/detail_cuti_diluartanggungan/'); ?><?php echo $ck['id']; ?>"
+                                <td><a href="<?php echo base_url('kaur/detail_cuti_diluartanggungan/'); ?><?php echo $ck['id']; ?>"
                                         class="btn btn-info btn-sm btn-block">Detail</a>
                                 </td>
                             </tr>

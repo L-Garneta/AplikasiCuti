@@ -20,7 +20,7 @@
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 Tanggal Pengajuan Cuti
                                 <span class="badge badge-light badge-pill"
-                                    style="font-size:15px;"><?php echo format_indo($cuti['input']); ?></span>
+                                    style="font-size:15px;"><?php echo format_indo($cuti['tgl_input']); ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 Tanggal Cuti
@@ -51,16 +51,6 @@
                                 <span class="badge badge-light badge-pill"
                                     style="font-size:15px;"><?php echo $cuti['keterangan']; ?></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Cuti Diambil
-                                <span class="badge badge-light badge-pill"
-                                    style="font-size:15px;"><?php echo $cuti['jml_cuti']; ?></span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Sisa Cuti
-                                <span class="badge badge-light badge-pill"
-                                    style="font-size:15px;"><?php echo $cuti['sisa_cuti']; ?></span>
-                            </li>
                         </ul>
                     </div>
                     <div class="col-md-4">
@@ -76,8 +66,8 @@
                                     style="font-size:15px;"><?php echo $cuti['atasan']; ?></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Approval SDM
+                                Status
+                                Approval Kaur
                                 <?php if ($cuti['approved_kaur'] == 0): ?>
                                     <span class="badge">ACC</span>
                                 <?php elseif ($cuti['approved_kaur'] == 2): ?>
@@ -96,8 +86,6 @@
                                 <?php else: ?>
                                     <span class="badge">Menunggu</span>
                                 <?php endif; ?>
-                            </li>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -108,6 +96,13 @@
         <!--/.Panel-->
     </div>
 </div>
+
+
+
+
+</div>
+</div>
+
 
 <!-- Grid column -->
 </div>

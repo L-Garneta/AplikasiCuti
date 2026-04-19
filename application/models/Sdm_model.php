@@ -7,227 +7,223 @@ class Sdm_model extends CI_Model
         $this->db->order_by('id', 'DESC');
         $this->db->limit(1);
         $query = $this->db->get('mst_user');
+
         if ($query->num_rows() <> 0) {
             $data = $query->row();
             $kode = intval($data->kode) + 1;
         } else {
             $kode = 1;
         }
+
         $kodemax = str_pad($kode, 4, "0", STR_PAD_LEFT);
-        $kodejadi = 'PEG-' . date('Y') . '-' . $kodemax;
-        return $kodejadi;
+        return 'PEG-' . date('Y') . '-' . $kodemax;
     }
 
     public function getUser()
     {
-        $query = "SELECT *
-                  FROM mst_user
-                  WHERE role_id = 2 OR role_id = 3 OR role_id = 4
-                  ORDER BY bagian ASC";
-        return $this->db->query($query)->result_array();
+        return $this->db
+            ->where_in('role_id', [2,3,4])
+            ->order_by('bagian', 'ASC')
+            ->get('mst_user')
+            ->result_array();
     }
 
     public function getBagian()
     {
-        $query = "SELECT bagian
-                  FROM mst_user
-                  GROUP BY bagian 
-                  ORDER BY bagian ASC";
-        return $this->db->query($query)->result_array();
-    }
-
-    public function getKaryawanPage($limit, $start)
-    {
-        $query = $this->db->get('mst_pegawai', $limit, $start)->result_array();
-        return $query;
+        return $this->db
+            ->select('bagian')
+            ->group_by('bagian')
+            ->order_by('bagian', 'ASC')
+            ->get('mst_user')
+            ->result_array();
     }
 
     public function getKaryawan()
     {
-        $this->db->select('*');
-        $this->db->from('mst_user');
-        $this->db->join('data_pegawai', 'data_pegawai.pegawai_id = mst_user.id', 'left');
-        $this->db->order_by('id', 'DESC');
-        $query = $this->db->get()->result_array();
-        return $query;
+        return $this->db
+            ->select('*')
+            ->from('mst_user')
+            ->join('data_pegawai', 'data_pegawai.pegawai_id = mst_user.id', 'left')
+            ->order_by('id', 'DESC')
+            ->get()
+            ->result_array();
     }
 
+    // =======================
+    // 🔥 CUTI (REFACTORED)
+    // =======================
 
-    public function getNilai($nik)
-    {
-        $query = "SELECT *
-                  FROM   mst_pegawai JOIN nilai_pegawai
-                  ON mst_pegawai.nik = nilai_pegawai.nik
-                  WHERE nilai_pegawai.nik = $nik ";
-        return $this->db->query($query)->result_array();
-    }
-
+    // ✅ Semua cuti
     public function getListCuti()
     {
-        $query = $this->db->get('form_cuti')->result_array();
-        return $query;
+        return $this->db
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
     }
+
+    // ✅ Untuk KAUR (tahap 1)
+    public function getCutiKaur()
+    {
+        return $this->db
+            ->where('approved_kaur', 1)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
+    }
+
+    // ✅ Untuk SDM (tahap 2)
+    public function getCutiSdm()
+    {
+        return $this->db
+            ->where('approved_kaur', 0)
+            ->where('approved_sdm', 1)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
+    }
+
+    // ✅ Pending (belum final)
+    public function getCutiPending()
+    {
+        return $this->db
+            ->where('is_approve', 1)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
+    }
+
+    // ✅ Disetujui
+    public function getCutiApproved()
+    {
+        return $this->db
+            ->where('is_approve', 0)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
+    }
+
+    // ✅ Ditolak
+    public function getCutiDitolak()
+    {
+        return $this->db
+            ->where('is_approve', 2)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
+    }
+
+    // =======================
+    // 🔥 CUTI LAIN
+    // =======================
+
+    public function getListCutiLuarTanggungan()
+    {
+        return $this->db
+            ->order_by('id', 'DESC')
+            ->get('formcuti_lain')
+            ->result_array();
+    }
+
+    public function getCutiLainPending()
+    {
+        return $this->db
+            ->where('is_approve', 1)
+            ->order_by('id', 'DESC')
+            ->get('formcuti_lain')
+            ->result_array();
+    }
+
+    // =======================
+    // 🔥 COUNT DATA
+    // =======================
 
     public function countUser()
     {
-        $query = $this->db->query(
-            "SELECT COUNT(id) as count_user
-                             FROM mst_user"
-        );
-        if ($query->num_rows() > 0) {
-            return $query->row()->count_user;
-        } else {
-            return 0;
-        }
+        return $this->db->count_all('mst_user');
     }
-
 
     public function countCutiTahunan()
     {
-        $query = $this->db->query(
-            "SELECT COUNT(is_approve) as tahunan
-                             FROM form_cuti
-                             WHERE is_approve = 1"
-        );
-        if ($query->num_rows() > 0) {
-            return $query->row()->tahunan;
-        } else {
-            return 0;
-        }
+        return $this->db
+            ->where('is_approve', 1)
+            ->count_all_results('form_cuti');
     }
 
     public function countCutiLuarTanggungan()
     {
-        $query = $this->db->query(
-            "SELECT COUNT(is_approve) as tanggungan
-                               FROM formcuti_lain
-                               WHERE is_approve = 1"
-        );
-        if ($query->num_rows() > 0) {
-            return $query->row()->tanggungan;
-        } else {
-            return 0;
-        }
+        return $this->db
+            ->where('is_approve', 1)
+            ->count_all_results('formcuti_lain');
     }
 
     public function countCutiDitolak()
     {
-        $query = $this->db->query(
-            "SELECT COUNT(is_approve) as ditolak
-                               FROM form_cuti
-                               WHERE is_approve = 2"
-        );
-        if ($query->num_rows() > 0) {
-            return $query->row()->ditolak;
-        } else {
-            return 0;
-        }
+        return $this->db
+            ->where('is_approve', 2)
+            ->count_all_results('form_cuti');
     }
 
-    public function getListCutiPending()
-    {
-        $this->db->select('*');
-        $this->db->from('form_cuti');
-        $this->db->where('is_approve', 1);
-        $this->db->order_by('id', 'DESC');
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
-
-    public function getListCutiPendingLuarTanggungan()
-    {
-        $this->db->select('*');
-        $this->db->from('formcuti_lain');
-        $this->db->where('is_approve', 1);
-        $this->db->order_by('id', 'DESC');
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
-
-    public function getListCutiLuarTanggungan()
-    {
-        $this->db->select('*');
-        $this->db->from('formcuti_lain');
-        $this->db->order_by('id', 'DESC');
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
-
-    public function getListCutiDitolak()
-    {
-        $this->db->select('*');
-        $this->db->from('form_cuti');
-        $this->db->where('is_approve', 2);
-        $this->db->order_by('id', 'DESC');
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
-
-    public function getListUser($limit, $start)
-    {
-        $this->db->select('*');
-        $this->db->from('mst_user');
-        $this->db->where('role_id', 2, 3, 4);
-        $this->db->order_by('id', 'DESC');
-        $this->db->limit($limit, $start);
-        $query = $this->db->get()->result_array();
-        return $query;
-    }
+    // =======================
+    // 🔥 DETAIL
+    // =======================
 
     public function getDetailPegawai($id)
     {
-        $query = "  SELECT * 
-                    FROM mst_user 
-                    LEFT JOIN data_pegawai
-                    ON mst_user.id = data_pegawai.pegawai_id
-                    WHERE mst_user.id = '$id'";
-        return $this->db->query($query)->row_array();
+        return $this->db
+            ->select('*')
+            ->from('mst_user')
+            ->join('data_pegawai', 'mst_user.id = data_pegawai.pegawai_id', 'left')
+            ->where('mst_user.id', $id)
+            ->get()
+            ->row_array();
     }
+
+    // =======================
+    // 🔥 CUTI STAF
+    // =======================
 
     public function getListCutiStaf()
     {
-        $query = "SELECT * 
-                    FROM form_cuti
-                    WHERE role_id = 3 
-                    ORDER BY id DESC";
-        return $this->db->query($query)->result_array();
+        return $this->db
+            ->where('role_id', 3)
+            ->order_by('id', 'DESC')
+            ->get('form_cuti')
+            ->result_array();
     }
 
     public function getListCutiLainStaf()
     {
-        $query = "SELECT * 
-                    FROM formcuti_lain
-                    WHERE role_id = 3 
-                    ORDER BY id DESC";
-        return $this->db->query($query)->result_array();
+        return $this->db
+            ->where('role_id', 3)
+            ->order_by('id', 'DESC')
+            ->get('formcuti_lain')
+            ->result_array();
     }
 
+    // =======================
+    // 🔥 HITUNG GAJI
+    // =======================
+
     public function hitung_gaji($id)
-{
-    // ambil data user
-    $karyawan = $this->db->get_where('mst_user', [
-        'id' => $id
-    ])->row();
+    {
+        $karyawan = $this->db->get_where('mst_user', ['id' => $id])->row();
 
-    // gaji sementara (karena belum ada di DB)
-    $gaji_pokok = 3000000;
+        $gaji_pokok = 3000000;
 
-    // hitung jumlah izin dari form_cuti
-    $this->db->where('user_id', $id); // nanti sesuaikan!
-    $this->db->where('jenis_cuti', 'izin');
-    $jumlah_izin = $this->db->count_all_results('form_cuti');
+        $this->db->where('id_user', $id);
+        $this->db->where('jenis_cuti', 'izin');
+        $jumlah_izin = $this->db->count_all_results('form_cuti');
 
-    $potongan_per_hari = $gaji_pokok / 31;
-    $total_potongan = $jumlah_izin * $potongan_per_hari;
+        $potongan_per_hari = $gaji_pokok / 31;
+        $total_potongan = $jumlah_izin * $potongan_per_hari;
 
-    $gaji_bersih = $gaji_pokok - $total_potongan;
-
-    return [
-        'nama' => $karyawan->nama,
-        'gaji_pokok' => $gaji_pokok,
-        'izin' => $jumlah_izin,
-        'potongan' => $total_potongan,
-        'gaji_bersih' => $gaji_bersih
-    ];
-}
+        return [
+            'nama' => $karyawan->nama,
+            'gaji_pokok' => $gaji_pokok,
+            'izin' => $jumlah_izin,
+            'potongan' => $total_potongan,
+            'gaji_bersih' => $gaji_pokok - $total_potongan
+        ];
+    }
 }

@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 13, 2020 at 06:06 AM
--- Server version: 10.4.6-MariaDB
--- PHP Version: 7.3.9
+-- Generation Time: Apr 13, 2026 at 04:15 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -19,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `cutifix_db`
+-- Database: `cuti_db`
 --
 
 -- --------------------------------------------------------
@@ -37,7 +36,7 @@ CREATE TABLE `data_keluarga` (
   `tgl_lahir_keluarga` date NOT NULL,
   `alamat_keluarga` text NOT NULL,
   `telp_keluarga` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `data_keluarga`
@@ -68,7 +67,7 @@ CREATE TABLE `data_pegawai` (
   `jenis_kelamin` text DEFAULT NULL,
   `gol_darah` text DEFAULT NULL,
   `alamat` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Dumping data for table `data_pegawai`
@@ -107,18 +106,26 @@ CREATE TABLE `formcuti_lain` (
   `nama_kabag` text NOT NULL,
   `direktur` text NOT NULL,
   `nama_direktur` text NOT NULL,
-  `alasan_ditolak` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `alasan_ditolak` text NOT NULL,
+  `approved_kaur` tinyint(4) DEFAULT 1,
+  `approved_sdm` tinyint(4) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `formcuti_lain`
 --
 
-INSERT INTO `formcuti_lain` (`id`, `kode_unik2`, `id_user`, `role_id`, `tgl_input`, `nik`, `nama`, `jabatan`, `bagian`, `keterangan`, `alamat`, `jenis_cuti`, `telp`, `cuti`, `cuti2`, `masuk`, `atasan`, `is_approve`, `kabag`, `nama_kabag`, `direktur`, `nama_direktur`, `alasan_ditolak`) VALUES
-(14, '20200405142726CTL0001', 55, 4, '2020-04-05', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'Cuti Bebas', 'Panjang RT/RW : 01/01', 'Cuti Lain', '08995625604', '2020-04-21', '2020-04-19', '2020-04-23', 'Donny Kurniawan', 1, 'Keuangan', 'Haryo Sujono', 'Keuangan', 'Gilang Ramadhan', ''),
-(15, '20200405161924CTL0002', 54, 3, '2020-04-05', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Studi Banding - Edit', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-20', '2020-04-05', '2020-04-13', '', 0, '', '', '', '', ''),
-(16, '20200405163039CTL0003', 54, 3, '2020-04-05', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Cek dan Ricek', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-28', '2020-04-22', '2020-04-01', '', 1, '', '', '', '', ''),
-(17, '20200407021631CTL0004', 54, 3, '2020-04-07', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Acara Khajatan', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-08', '2020-04-07', '2020-04-07', '', 1, '', '', '', '', '');
+INSERT INTO `formcuti_lain` (`id`, `kode_unik2`, `id_user`, `role_id`, `tgl_input`, `nik`, `nama`, `jabatan`, `bagian`, `keterangan`, `alamat`, `jenis_cuti`, `telp`, `cuti`, `cuti2`, `masuk`, `atasan`, `is_approve`, `kabag`, `nama_kabag`, `direktur`, `nama_direktur`, `alasan_ditolak`, `approved_kaur`, `approved_sdm`) VALUES
+(14, '20200405142726CTL0001', 55, 4, '2020-04-05', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'Cuti Bebas', 'Panjang RT/RW : 01/01', 'Cuti Lain', '08995625604', '2020-04-21', '2020-04-19', '2020-04-23', 'Donny Kurniawan', 1, 'Keuangan', 'Haryo Sujono', 'Keuangan', 'Gilang Ramadhan', '', 1, 1),
+(15, '20200405161924CTL0002', 54, 3, '2020-04-05', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Studi Banding - Edit', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-20', '2020-04-05', '2020-04-13', '', 0, '', '', '', '', '', 1, 1),
+(16, '20200405163039CTL0003', 54, 3, '2020-04-05', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Cek dan Ricek', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-28', '2020-04-22', '2020-04-01', 'Donny Kurniawan', 2, 'sdm', 'sdm', 'Keuangan', 'aa', 'mmm', 1, 1),
+(17, '20200407021631CTL0004', 54, 3, '2020-04-07', '12345678', 'Donny Kurniawan', 'Kepala Urusan', 'Keuangan', 'Acara Khajatan', 'Kojan rt 02 rw 01', 'Cuti Lain', '08995625604', '2020-04-08', '2020-04-07', '2020-04-07', 'Donny Kurniawan', 0, 'sdm', 'sdm', 'Utama', 'ascfda', '', 1, 1),
+(18, '20260331061630CTL0005', 55, 4, '2026-03-31', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'cuti bulanan ', 'Panjang RT/RW : 01/01', 'Cuti Lain', '08212345678', '2026-04-03', '2026-04-03', '2026-04-04', '', 1, '', '', '', '', '', 1, 1),
+(19, '20260406023222CTL0006', 55, 4, '2026-04-06', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'Cuti Bebas', 'Panjang RT/RW : 01/01', 'Cuti Lain', '897900', '2026-04-06', '2026-04-06', '2026-04-07', '', 1, '', '', '', '', '', 1, 1),
+(20, '20260406051831CTL0007', 55, 4, '2026-04-06', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'menikah', 'Panjang RT/RW : 01/01', 'Cuti Lain', '9999', '2026-04-16', '2026-04-16', '2026-04-17', '', 1, '', '', '', '', '', 1, 1),
+(21, '20260406052329CTL0008', 55, 4, '2026-04-06', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'hamil', 'Panjang RT/RW : 01/01', 'Cuti Lain', '08188876', '2026-04-15', '2026-04-15', '2026-04-16', '', 1, '', '', '', '', '', 1, 1),
+(22, '20260406053039CTL0009', 55, 4, '2026-04-06', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'Cuti Bebas', 'Panjang RT/RW : 01/01', 'Cuti Lain', '0875678', '2026-04-25', '2026-04-25', '2026-04-26', '', 1, '', '', '', '', '', 1, 1),
+(23, '20260412035200CTL0010', 55, 4, '2026-04-12', '123456789', 'Donny Kurniawan', 'Staf', 'Keuangan', 'Cuti Bebas', 'Panjang RT/RW : 01/01', 'Cuti Lain', '08212345678', '2026-04-14', '2026-04-14', '2026-04-15', '', 0, '', '', '', '', '', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -148,17 +155,22 @@ CREATE TABLE `form_cuti` (
   `atasan` varchar(150) NOT NULL,
   `alasan_ditolak` text NOT NULL,
   `nama_kabid` text NOT NULL,
-  `is_approve` int(1) NOT NULL COMMENT '0 = Terima, 1 = Tunggu, 2 = Tolak'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `is_approve` int(1) NOT NULL COMMENT '0 = Terima, 1 = Tunggu, 2 = Tolak',
+  `approved_kaur` tinyint(4) DEFAULT 1,
+  `approved_sdm` tinyint(4) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `form_cuti`
 --
 
-INSERT INTO `form_cuti` (`id`, `kode_unik`, `id_user`, `role_id`, `input`, `nik`, `nama`, `bagian`, `jabatan`, `jenis_cuti`, `keterangan`, `jml_cuti`, `sisa_cuti`, `cuti`, `cuti2`, `masuk`, `alamat`, `telp`, `atasan`, `alasan_ditolak`, `nama_kabid`, `is_approve`) VALUES
-(58, '20200405142656CT0001', 55, 4, '2020-04-05', 123456789, 'Donny Kurniawan', 'Keuangan', 'Staf', 'Cuti Tahunan', 'Cuti Bebas', 3, 9, '2020-04-06', '2020-04-14', '2020-04-17', 'Panjang RT/RW : 01/01', '08995625604', 'Donny Kurniawan', 'Kekurangan Tenaga ', 'Ratna Damayanti, Spd', 0),
-(61, '20200405161025CT0002', 54, 3, '2020-04-05', 12345678, 'Donny Kurniawan', 'Keuangan', 'Kepala Urusan', 'Cuti Tahunan', 'Coba dan mencoba', 4, 8, '2020-04-05', '2020-04-07', '2020-04-08', 'Kojan rt 02 rw 01', '08995625604', '', '', '', 0),
-(62, '20200407021613CT0003', 54, 3, '2020-04-07', 12345678, 'Donny Kurniawan', 'Keuangan', 'Kepala Urusan', 'Cuti Tahunan', 'Coba dan mencoba', 3, 5, '2020-04-07', '2020-04-07', '2020-04-07', 'Kojan rt 02 rw 01', '08995625604', '', '', '', 1);
+INSERT INTO `form_cuti` (`id`, `kode_unik`, `id_user`, `role_id`, `input`, `nik`, `nama`, `bagian`, `jabatan`, `jenis_cuti`, `keterangan`, `jml_cuti`, `sisa_cuti`, `cuti`, `cuti2`, `masuk`, `alamat`, `telp`, `atasan`, `alasan_ditolak`, `nama_kabid`, `is_approve`, `approved_kaur`, `approved_sdm`) VALUES
+(58, '20200405142656CT0001', 55, 4, '2020-04-05', 123456789, 'Donny Kurniawan', 'Keuangan', 'Staf', 'Cuti Tahunan', 'Cuti Bebas', 3, 9, '2020-04-06', '2020-04-14', '2020-04-17', 'Panjang RT/RW : 01/01', '08995625604', 'Donny Kurniawan', 'Kekurangan Tenaga ', 'Ratna Damayanti, Spd', 0, 1, 1),
+(61, '20200405161025CT0002', 54, 3, '2020-04-05', 12345678, 'Donny Kurniawan', 'Keuangan', 'Kepala Urusan', 'Cuti Tahunan', 'Coba dan mencoba', 4, 8, '2020-04-05', '2020-04-07', '2020-04-08', 'Kojan rt 02 rw 01', '08995625604', '', '', '', 0, 1, 1),
+(62, '20200407021613CT0003', 54, 3, '2020-04-07', 12345678, 'Donny Kurniawan', 'Keuangan', 'Kepala Urusan', 'Cuti Tahunan', 'Coba dan mencoba', 3, 5, '2020-04-07', '2020-04-07', '2020-04-07', 'Kojan rt 02 rw 01', '08995625604', 'Donny Kurniawan', '', 'sdm', 0, 1, 1),
+(63, '20260329152025CT0004', 55, 4, '2026-03-29', 123456789, 'Donny Kurniawan', 'Keuangan', 'Staf', 'Cuti Tahunan', 'Cuti Bebas', 2, 7, '2026-03-30', '2026-03-31', '2026-04-01', 'Panjang RT/RW : 01/01', '08995625604', '', '', '', 1, 1, 1),
+(64, '20260401034839CT0005', 54, 3, '2026-04-01', 12345678, 'Donny Kurniawan', 'Keuangan', 'Kepala Urusan', 'Cuti Tahunan', 'holiday', 1, 4, '2026-04-03', '2026-04-03', '2026-04-04', 'Kojan rt 02 rw 01', '08995625604', 'Donny Kurniawan', '', 'sdm', 0, 1, 1),
+(65, '20260412062913CT0006', 68, 4, '2026-04-12', 0, 'Ivon', '', 'Staf', 'Cuti Tahunan', '<div style=', 2, 10, '2026-04-14', '2026-04-15', '2026-04-16', 'desaaaa', '08995625604', '', '', '', 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -189,7 +201,7 @@ CREATE TABLE `history_cuti` (
   `alasan_ditolak` text NOT NULL,
   `nama_kabid` text NOT NULL,
   `is_approve` int(1) NOT NULL COMMENT '0 = Terima, 1 = Tunggu, 2 = Tolak'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `history_cuti`
@@ -219,16 +231,16 @@ CREATE TABLE `mst_user` (
   `date_created` date NOT NULL,
   `role_id` int(11) NOT NULL,
   `is_active` int(1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `mst_user`
 --
 
 INSERT INTO `mst_user` (`id`, `nama`, `jabatan`, `bagian`, `nik`, `image`, `username`, `password`, `date_created`, `role_id`, `is_active`) VALUES
-(9, 'Donny Kurniawan', 'Admin', 'EDP', '18030110', 'avatar4.png', 'admin', '$2y$10$dR5WhOrVZW/n/zNoBuOYZOzV5TYZnsFl2FenIjwK7U8dbpSEujiMq', '0000-00-00', 1, 1),
+(9, 'Donny Kurniawan', 'Admin', 'Admin', '18030110', 'avatar4.png', 'admin', '$2y$10$dR5WhOrVZW/n/zNoBuOYZOzV5TYZnsFl2FenIjwK7U8dbpSEujiMq', '0000-00-00', 1, 1),
 (59, 'Permana', 'Staf', 'Front Office', '0111844', 'default.jpg', 'permana', '$2y$10$SauLMIxjf7MVDS.8C2L8yOmfsJBpdEg.uKfD25aT4vBa9hzUabRJ2', '2020-04-03', 4, 1),
-(58, 'Andini', 'Staf', '', '65432345', 'default.jpg', 'andini', '$2y$10$9iCyUPRGGuoBsJ/yr2KTmuv5Fs8MHSlifdcFGoWBSQ5co.FcH4DGu', '2020-04-03', 4, 0),
+(58, 'Andini', 'Staf', '', '65432345', 'default.jpg', 'andini', '$2y$10$9iCyUPRGGuoBsJ/yr2KTmuv5Fs8MHSlifdcFGoWBSQ5co.FcH4DGu', '2020-04-03', 4, 1),
 (57, 'Paijo', 'Staf', 'SDM', '54321', 'default.jpg', 'paijo', '$2y$10$6IeRE3sQ8DixnBxcsVzdeO5g6Wt0OTZEYUSbXTXEzsvbppQQwUXWC', '2020-04-02', 2, 1),
 (56, 'Donny Kurniawan', 'Staf', 'SDM', '87654321', 'avatar52.png', 'sdm', '$2y$10$IsYum9poMjzb.ZMNKeZgyunYP7elE3NYGVvGY6GrwZBKJrwkuEnei', '0000-00-00', 2, 1),
 (55, 'Donny Kurniawan', 'Staf', 'Keuangan', '123456789', 'avatar6.png', 'staf', '$2y$10$2iPnjNPAtUTsE4wR09iVsOGlCS69bCALN7A7Az4j13NNMrYVCWTSS', '0000-00-00', 4, 1),
@@ -237,7 +249,9 @@ INSERT INTO `mst_user` (`id`, `nama`, `jabatan`, `bagian`, `nik`, `image`, `user
 (61, 'Harjo Waringin, SPd', 'Staf', 'Keuangan', '5432345', 'default.jpg', 'harjo', '$2y$10$82pJDQldR8CeGvxFUh26g.hnxpNLD5.5IYsFNHgUf6EzliLSxQuxi', '2020-04-03', 4, 1),
 (64, 'Donny Kurniawan', 'Staf', 'Keuangan', 'PEG-2019-0003', 'default.jpg', '12345', '$2y$10$WDbWm3oEMV5tnlgZtdD4Z.f/BIWZqlVHUxMPqzmHdnIkb4rvfSczO', '2020-04-03', 4, 1),
 (65, 'Donny Kurniawan', 'Staf', 'Security', 'PEG-2020-0004', 'default.jpg', 'security', '$2y$10$M0DP4Y2ndIXy2O9YPdXtbuiMSFCcPBCe2zDeedLdyjxmAO24a3vNO', '2020-04-11', 4, 1),
-(66, 'Donny Kurniawan', 'Kepala Urusan', 'Security', 'PEG-2020-0005', 'default.jpg', 'kepala', '$2y$10$TAvA5nJ5XciZs85qQADgA.UpTNf27IYnboMtAdJ1LukgJOd0TJOI6', '2020-04-11', 3, 1);
+(66, 'Donny Kurniawan', 'Kepala Urusan', 'Security', 'PEG-2020-0005', 'default.jpg', 'kepala', '$2y$10$TAvA5nJ5XciZs85qQADgA.UpTNf27IYnboMtAdJ1LukgJOd0TJOI6', '2020-04-11', 3, 1),
+(67, 'az zahra ramadhania', 'IT', 'admin', 'PEG-2026-0006', 'default.jpg', 'Admin1', '$2y$10$EBW3K5dRy2PgEmxz4hI7e.gL1X.XdPAtiWHPSbj083ZChnb8db.wC', '0000-00-00', 4, 1),
+(68, 'Ivon', 'Staf', '', 'PEG-2026-0007', 'default.jpg', 'ivon', '$2y$10$XNB2n7Fl080RE8yIHqXBde9BEqSzEWR62.RShmNhXmdGv4.oNrJEG', '0000-00-00', 4, 1);
 
 -- --------------------------------------------------------
 
@@ -249,7 +263,7 @@ CREATE TABLE `user_access_menu` (
   `id` int(11) NOT NULL,
   `role_id` int(11) NOT NULL,
   `menu_id` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `user_access_menu`
@@ -259,8 +273,7 @@ INSERT INTO `user_access_menu` (`id`, `role_id`, `menu_id`) VALUES
 (1, 1, 1),
 (2, 4, 4),
 (4, 2, 2),
-(5, 3, 3),
-(12, 1, 2);
+(5, 3, 3);
 
 -- --------------------------------------------------------
 
@@ -271,7 +284,7 @@ INSERT INTO `user_access_menu` (`id`, `role_id`, `menu_id`) VALUES
 CREATE TABLE `user_menu` (
   `id` int(11) NOT NULL,
   `menu` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `user_menu`
@@ -293,7 +306,7 @@ INSERT INTO `user_menu` (`id`, `menu`) VALUES
 CREATE TABLE `user_role` (
   `id` int(11) NOT NULL,
   `role` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `user_role`
@@ -318,7 +331,7 @@ CREATE TABLE `user_sub_menu` (
   `url` varchar(128) NOT NULL,
   `icon` varchar(128) NOT NULL,
   `is_active` int(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `user_sub_menu`
@@ -424,13 +437,13 @@ ALTER TABLE `data_pegawai`
 -- AUTO_INCREMENT for table `formcuti_lain`
 --
 ALTER TABLE `formcuti_lain`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `form_cuti`
 --
 ALTER TABLE `form_cuti`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT for table `history_cuti`
@@ -442,13 +455,13 @@ ALTER TABLE `history_cuti`
 -- AUTO_INCREMENT for table `mst_user`
 --
 ALTER TABLE `mst_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `user_access_menu`
 --
 ALTER TABLE `user_access_menu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `user_menu`
