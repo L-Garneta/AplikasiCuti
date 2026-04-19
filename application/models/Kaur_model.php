@@ -122,7 +122,7 @@ class Kaur_model extends CI_model
     {
         $query = "SELECT * 
                     FROM form_cuti
-                    WHERE bagian = '$bagian' AND role_id = 4 
+                    WHERE approved_kaur = 1 AND approved_sdm = 1 
                     ORDER BY id DESC";
         return $this->db->query($query)->result_array();
     }
@@ -140,7 +140,7 @@ class Kaur_model extends CI_model
     {
         $query = "SELECT *
                     FROM formcuti_lain
-                    WHERE bagian = '$bagian' AND role_id = 4 ORDER BY id DESC ";
+                    WHERE approved_kaur = 1 AND approved_sdm = 1 ORDER BY id DESC ";
         return $this->db->query($query)->result_array();
     }
 

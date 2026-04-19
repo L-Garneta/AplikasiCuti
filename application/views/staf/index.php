@@ -54,63 +54,7 @@ if (!isset($sisa_cuti) || !$sisa_cuti) {
                        </div>
                    </div>
 
-                   <!-- Earnings (Monthly) Card Example -->
-                   <div class="col-xl-3 col-md-6 mb-4">
-                       <div class="card border-left-success shadow h-100 py-2">
-                           <div class="card-body">
-                               <div class="row no-gutters align-items-center">
-                                   <div class="col mr-2">
-                                       <div class="text-xs font-weight-bold text-success text-uppercase mb-1">History Cuti</div>
-                                       <div class="h5 mb-0 font-weight-bold text-gray-800"><a href="<?php echo base_url('staf/history'); ?>" style="text-decoration:none;"><?php echo $history_count; ?> List Cuti</a></div>
-                                   </div>
-                                   <div class="col-auto">
-                                       <i class="far fa-edit fa-2x text-gray-300"></i>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-
-                   <!-- Earnings (Monthly) Card Example -->
-                   <div class="col-xl-3 col-md-6 mb-4">
-                       <div class="card border-left-info shadow h-100 py-2">
-                           <div class="card-body">
-                               <div class="row no-gutters align-items-center">
-                                   <div class="col mr-2">
-                                       <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Cuti Lain</div>
-                                       <div class="row no-gutters align-items-center">
-                                           <div class="col-auto">
-                                               <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><a href="<?php echo base_url('staf/history_cutilain'); ?>" style="text-decoration:none;"><?php echo $history_countcutilain; ?> List Cuti</a></div>
-                                           </div>
-                                       </div>
-                                   </div>
-                                   <div class="col-auto">
-                                       <i class="fas fa-edit fa-2x text-gray-300"></i>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-
-                   <!-- Pending Requests Card Example -->
-                   <div class="col-xl-3 col-md-6 mb-4">
-                       <div class="card border-left-warning shadow h-100 py-2">
-                           <div class="card-body">
-                               <div class="row no-gutters align-items-center">
-                                   <div class="col mr-2">
-                                       <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Info Saya</div>
-                                       <div class="h5 mb-0 font-weight-bold text-gray-800"><a href="#" style="text-decoration:none;">Detail</a></div>
-                                   </div>
-                                   <div class="col-auto">
-                                       <i class="fas fa-user-tie fa-2x text-gray-300"></i>
-                                   </div>
-                               </div>
-                           </div>
-                       </div>
-                   </div>
-               </div>
-
-               <!-- Content Row -->
+                   <!-- Content Row -->
                <div class="row">
                    <div class="col-md-4">
                        <div class="card border-light mb-3 mr-1">
@@ -120,6 +64,7 @@ if (!isset($sisa_cuti) || !$sisa_cuti) {
                                    <span class="font-weight-bolder">Tidak Ada Data</span>
                                <?php else : ?> <?php if ($sisa_cuti['is_approve'] == 2) : ?> <div class="alert alert-warning" role="alert">
                                            <h5 class="text-danger" style="font-weight:700;"> <strong>CUTI DITOLAK</strong> </h5>
+                                           <p class="text-dark mb-2"><strong>Alasan:</strong> <?php echo $sisa_cuti['alasan_ditolak'] ?? '-'; ?></p>
                                            <a href="<?php echo base_url('staf/add_cuti'); ?>" class="btn btn-info btn-sm">Ajukan Ulang</a>
                                            <ul>
                                            <?php else : ?>
@@ -232,13 +177,13 @@ if (!isset($sisa_cuti) || !$sisa_cuti) {
                        <div class="form-group row">
                            <label class="col-sm-2 col-form-label">Username</label>
                            <div class="col-sm-10">
-                               <input type="text" class="form-control form-control-sm" name="username" value="<?php echo $user['username']; ?>" readonly>
+                               <input type="text" class="form-control form-control-sm" name="username" value="<?php echo $user['username']; ?>" required>
                            </div>
                        </div>
                        <div class="form-group row">
                            <label class="col-sm-2 col-form-label">NIK</label>
                            <div class="col-sm-10">
-                               <input type="text" class="form-control form-control-sm" name="nik" value="<?php echo $user['nik']; ?>" readonly>
+                               <input type="text" class="form-control form-control-sm" name="nik" value="<?php echo $user['nik']; ?>" required>
                            </div>
                        </div>
                        <div class="form-group row">
@@ -293,15 +238,19 @@ if (!isset($sisa_cuti) || !$sisa_cuti) {
                        <form action="<?php echo base_url('staf/changepassword'); ?>" method="post">
                            <div class="form-group">
                                <label>Password Lama</label>
-                               <input type="password" class="form-control form-control-sm" name="current_password" required>
+                               <input type="password" class="form-control form-control-sm pass-toggle" name="current_password" required>
                            </div>
                            <div class="form-group">
                                <label>Password Baru</label>
-                               <input type="password" class="form-control form-control-sm" name="new_password1" required>
+                               <input type="password" class="form-control form-control-sm pass-toggle" name="new_password1" required>
                            </div>
-                           <div class="form-group">
+                                                      <div class="form-group">
                                <label>Ulang Password</label>
-                               <input type="password" class="form-control form-control-sm" name="new_password2" placeholder="Ketik ulang password baru" required>
+                               <input type="password" class="form-control form-control-sm pass-toggle" name="new_password2" placeholder="Ketik ulang password baru" required>
+                           </div>
+                           <div class="form-group custom-control custom-checkbox small">
+                               <input type="checkbox" class="custom-control-input" id="checkPass" onclick="togglePass()">
+                               <label class="custom-control-label" for="checkPass" style="cursor:pointer;">Tampilkan Password</label>
                            </div>
                            <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
@@ -310,3 +259,15 @@ if (!isset($sisa_cuti) || !$sisa_cuti) {
                </div>
            </div>
        </div>
+       <script>
+       function togglePass() {
+           var elements = document.getElementsByClassName("pass-toggle");
+           for(var i=0; i<elements.length; i++) {
+               if(elements[i].type === "password") {
+                   elements[i].type = "text";
+               } else {
+                   elements[i].type = "password";
+               }
+           }
+       }
+       </script>

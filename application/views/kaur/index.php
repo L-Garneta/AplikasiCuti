@@ -219,17 +219,17 @@
 				<h5 class="modal-title" id="exampleModalLabel">Ubah Profile</h5>
 			</div>
 			<div class="modal-body">
-				<?php echo form_open_multipart('kaur/edit_profile'); ?>
+				<?php echo form_open_multipart('kaur/edit'); ?>
 				<div class="form-group row">
 					<label class="col-sm-2 col-form-label">Username</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control form-control-sm" name="username" value="<?php echo $user['username']; ?>" readonly>
+						<input type="text" class="form-control form-control-sm" name="username" value="<?php echo $user['username']; ?>" required>
 					</div>
 				</div>
 				<div class="form-group row">
 					<label class="col-sm-2 col-form-label">NIK</label>
 					<div class="col-sm-10">
-						<input type="text" class="form-control form-control-sm" name="nik" value="<?php echo $user['nik']; ?>" readonly>
+						<input type="text" class="form-control form-control-sm" name="nik" value="<?php echo $user['nik']; ?>" required>
 					</div>
 				</div>
 				<div class="form-group row">
@@ -284,23 +284,39 @@
 				<form action="<?php echo base_url('kaur/changepassword'); ?>" method="post">
 					<div class="form-group">
 						<label>Password Lama</label>
-						<input type="password" class="form-control form-control-sm" name="current_password" required>
+						<input type="password" class="form-control form-control-sm pass-toggle" name="current_password" required>
 					</div>
 					<div class="form-group">
 						<label>Password Baru</label>
-						<input type="password" class="form-control form-control-sm" name="new_password1" required>
+						<input type="password" class="form-control form-control-sm pass-toggle" name="new_password1" required>
 					</div>
-					<div class="form-group">
-						<label>Ulang Password</label>
-						<input type="password" class="form-control form-control-sm" name="new_password2" placeholder="Ketik ulang password baru" required>
-					</div>
-					<button type="submit" class="btn btn-primary">Simpan Perubahan</button>
-					<button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
-				</form>
-			</div>
-		</div>
-	</div>
-</div>
+					                           <div class="form-group">
+                               <label>Ulang Password</label>
+                               <input type="password" class="form-control form-control-sm pass-toggle" name="new_password2" placeholder="Ketik ulang password baru" required>
+                           </div>
+                           <div class="form-group custom-control custom-checkbox small">
+                               <input type="checkbox" class="custom-control-input" id="checkPass" onclick="togglePass()">
+                               <label class="custom-control-label" for="checkPass" style="cursor:pointer;">Tampilkan Password</label>
+                           </div>
+                           <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                           <button class="btn btn-secondary" type="button" data-dismiss="modal">Tutup</button>
+                       </form>
+                   </div>
+               </div>
+           </div>
+       </div>
+       <script>
+       function togglePass() {
+           var elements = document.getElementsByClassName("pass-toggle");
+           for(var i=0; i<elements.length; i++) {
+               if(elements[i].type === "password") {
+                   elements[i].type = "text";
+               } else {
+                   elements[i].type = "password";
+               }
+           }
+       }
+       </script>
 
 
 <div class="modal fade" id="edit-user" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

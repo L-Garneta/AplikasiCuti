@@ -40,6 +40,7 @@
                                 </td>
 
                                 <td>
+                                    <a href="<?= base_url('sdm/detail_cuti/' . $c['id']); ?>" class="btn btn-info btn-sm">Detail</a>
                                     <button class="btn btn-primary btn-sm btn-approve"
                                         data-id="<?= $c['id']; ?>"
                                         data-nama="<?= $c['nama']; ?>"

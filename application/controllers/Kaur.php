@@ -73,8 +73,10 @@ class Kaur extends CI_Controller
 		$this->db->set('jabatan', $jabatan);
 		$this->db->set('bagian', $bagian);
 		$this->db->set('nik', $nik);
-		$this->db->where('username', $username);
+		$this->db->set('username', $username);
+		$this->db->where('id', $this->session->userdata('id'));
 		$this->db->update('mst_user');
+		$this->session->set_userdata('username', $username);
 
 		$this->session->set_flashdata('message', 'Simpan Perubahan');
 		redirect('kaur/index');

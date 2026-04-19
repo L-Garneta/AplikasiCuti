@@ -317,4 +317,67 @@ public function list_cuti_diluartanggungan_kary()
         $this->load->view('templates/footer');
     }
 
+
+
+    public function edit_profile()
+    {
+        $upload_image = $_FILES['image']['name'];
+        if ($upload_image) {
+            $config['allowed_types'] = 'gif|jpg|png|jpeg';
+            $config['max_size']     = '2048';
+            $config['upload_path'] = './assets/img/profile';
+            $this->load->library('upload', $config);
+            if ($this->upload->do_upload('image')) {
+                $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
+                $old_image = $data['user']['image'];
+                if ($old_image != 'default.jpg') {
+                    unlink(FCPATH . 'assets/img/profile/' . $old_image);
+                }
+
+                $new_image = $this->upload->data('file_name');
+                $this->db->set('image', $new_image);
+            } else {
+                echo $this->upload->display_errors();
+            }
+        }
+        $nama =  $this->input->post('nama');
+        $jabatan =  $this->input->post('jabatan');
+        $bagian =  $this->input->post('bagian');
+        $nik = $this->input->post('nik');
+        $username = $this->input->post('username');
+
+        $this->db->set('nama', $nama);
+        $this->db->set('jabatan', $jabatan);
+        $this->db->set('bagian', $bagian);
+        $this->db->set('nik', $nik);
+        $this->db->set('username', $username);
+        $this->db->where('id', $this->session->userdata('id'));
+        $this->db->update('mst_user');
+        
+        $this->session->set_userdata('username', $username);
+
+        $this->session->set_flashdata('message', 'Simpan Perubahan');
+        redirect('sdm/index');
+    }
+
+
+
+    public function changepassword()
+    {
+        $current_password = $this->input->post('current_password');
+        $new_password = $this->input->post('new_password1');
+
+        if ($current_password == $new_password) {
+            $this->session->set_flashdata('msg', '<div class="alert alert-danger font-weight-bolder text-center" role="alert">Password baru tidak boleh sama dengan password lama</div>');
+            redirect('sdm/index');
+        } else {
+            $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $this->db->set('password', $password_hash);
+            $this->db->where('username', $this->session->userdata('username'));
+            $this->db->update('mst_user');
+            $this->session->set_flashdata('message', 'Simpan Perubahan');
+            redirect('sdm/index');
+        }
+    }
+
 }

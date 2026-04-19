@@ -101,8 +101,11 @@ class Staf extends CI_Controller
         $this->db->set('jabatan', $jabatan);
         $this->db->set('bagian', $bagian);
         $this->db->set('nik', $nik);
-        $this->db->where('username', $username);
+        $this->db->set('username', $username);
+        $this->db->where('id', $this->session->userdata('id'));
         $this->db->update('mst_user');
+        
+        $this->session->set_userdata('username', $username);
 
         $this->session->set_flashdata('message', 'Simpan Perubahan');
         redirect('staf/index');
@@ -408,6 +411,7 @@ public function add_cuti()
             'nama' => $this->input->post('nama', true),
             'jabatan' => $this->input->post('jabatan', true),
             'bagian' => $this->input->post('bagian', true),
+            'jml_cuti' => $this->input->post('jml_cuti', true),
             'keterangan' => $this->input->post('keterangan', true),
             'alamat' => $this->input->post('alamat', true),
             'jenis_cuti' => $this->input->post('jenis_cuti', true),
