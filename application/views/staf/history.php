@@ -30,14 +30,14 @@
                             <th scope="col">Cuti 2</th>
                             <th scope="col">Masuk Kerja</th>
                             <th scope="col">Status</th>
+                             <th scope="col">Alasan Ditolak</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php $i = 1; ?>
                         <?php foreach ($cuti_saya as $uc): ?>
-                            <?php var_dump($uc);
-                            die; ?>
+                            
                             <tr>
                                 <th scope="row"><?php echo $i++; ?></th>
                                 <td><?php echo format_indo($uc['input']); ?></td>
@@ -53,15 +53,12 @@
                                 <?php elseif ($uc['is_approve'] == 2): ?>
                                     <td><span class="btn btn-danger btn-sm btn-block font-weight-bolder">Ditolak</span></td>
                                 <?php else: ?>
-                                    <td><span class="btn btn-light btn-sm btn-block font-weight-bolder">Diterima</span></td>
+                                    <td><span class="btn btn-light btn-sm font-weight-bolder btn-block">Diterima</span></td>
                                 <?php endif; ?>
-                            </tr>
-                            <td>
-                                <a href="<?= base_url('staf/cetak_data/' . $uc['id_cuti']); ?>" class="btn btn-danger btn-sm"
-                                    target="_blank">
-                                    PDF
-                                </a>
-                            </td>
+                                <td><?php echo isset($uc['alasan_ditolak']) ? $uc['alasan_ditolak'] : '-'; ?></td>
+                                <td>
+                                    <a href="<?= base_url('staf/cetak_data/' . $uc['id_cuti']); ?>" class="btn btn-danger btn-sm" target="_blank">PDF</a>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

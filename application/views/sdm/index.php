@@ -22,7 +22,7 @@
 						<div class="card-body">
 							<div class="row no-gutters align-items-center">
 								<div class="col mr-2">
-									<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Cuti Tahunan Karyawan</div>
+									<div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Cuti Bulanan Karyawan</div>
 									<div class="h5 mb-0 font-weight-bold text-gray-800"><a href="<?php echo base_url('sdm/list_tunggu_cuti_kary'); ?>" style="text-decoration:none;"><?php echo $count_cuti_tahunan; ?> Menunggu</a></div>
 								</div>
 								<div class="col-auto">

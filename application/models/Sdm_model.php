@@ -54,8 +54,12 @@ class Sdm_model extends CI_Model
     // =======================
 
     // ✅ Semua cuti
-    public function getListCuti()
+    public function getListCuti($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->order_by('id', 'DESC')
             ->get('form_cuti')
@@ -63,8 +67,12 @@ class Sdm_model extends CI_Model
     }
 
     // ✅ Untuk KAUR (tahap 1)
-    public function getCutiKaur()
+    public function getCutiKaur($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('approved_kaur', 1)
             ->order_by('id', 'DESC')
@@ -73,8 +81,12 @@ class Sdm_model extends CI_Model
     }
 
     // ✅ Untuk SDM (tahap 2)
-    public function getCutiSdm()
+    public function getCutiSdm($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('approved_kaur', 0)
             ->where('approved_sdm', 1)
@@ -84,8 +96,12 @@ class Sdm_model extends CI_Model
     }
 
     // ✅ Pending (belum final)
-    public function getCutiPending()
+    public function getCutiPending($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('is_approve', 1)
             ->order_by('id', 'DESC')
@@ -94,8 +110,12 @@ class Sdm_model extends CI_Model
     }
 
     // ✅ Disetujui
-    public function getCutiApproved()
+    public function getCutiApproved($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('is_approve', 0)
             ->order_by('id', 'DESC')
@@ -104,8 +124,12 @@ class Sdm_model extends CI_Model
     }
 
     // ✅ Ditolak
-    public function getCutiDitolak()
+    public function getCutiDitolak($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('is_approve', 2)
             ->order_by('id', 'DESC')
@@ -117,16 +141,24 @@ class Sdm_model extends CI_Model
     // 🔥 CUTI LAIN
     // =======================
 
-    public function getListCutiLuarTanggungan()
+    public function getListCutiLuarTanggungan($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(tgl_input)', $m);
+            $this->db->where('YEAR(tgl_input)', $y);
+        }
         return $this->db
             ->order_by('id', 'DESC')
             ->get('formcuti_lain')
             ->result_array();
     }
 
-    public function getCutiLainPending()
+    public function getCutiLainPending($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(tgl_input)', $m);
+            $this->db->where('YEAR(tgl_input)', $y);
+        }
         return $this->db
             ->where('is_approve', 1)
             ->order_by('id', 'DESC')
@@ -183,8 +215,12 @@ class Sdm_model extends CI_Model
     // 🔥 CUTI STAF
     // =======================
 
-    public function getListCutiStaf()
+    public function getListCutiStaf($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(input)', $m);
+            $this->db->where('YEAR(input)', $y);
+        }
         return $this->db
             ->where('role_id', 3)
             ->order_by('id', 'DESC')
@@ -192,8 +228,12 @@ class Sdm_model extends CI_Model
             ->result_array();
     }
 
-    public function getListCutiLainStaf()
+    public function getListCutiLainStaf($m = null, $y = null)
     {
+        if (!empty($m) && !empty($y)) {
+            $this->db->where('MONTH(tgl_input)', $m);
+            $this->db->where('YEAR(tgl_input)', $y);
+        }
         return $this->db
             ->where('role_id', 3)
             ->order_by('id', 'DESC')

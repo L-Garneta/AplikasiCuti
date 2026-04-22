@@ -146,7 +146,6 @@ public function add_cuti()
     $this->form_validation->set_rules('input', 'Tanggal', 'required|trim');
     $this->form_validation->set_rules('keterangan', 'Keterangan', 'required|trim');
     $this->form_validation->set_rules('jml_cuti', 'Ambil cuti', 'required|trim|numeric|greater_than[0]');
-    $this->form_validation->set_rules('sisa_cuti', 'Sisa Cuti', 'required|trim|greater_than[-1]');
     $this->form_validation->set_rules('cuti', 'Tanggal Cuti 1', 'required|trim');
     $this->form_validation->set_rules('cuti2', 'Tanggal Cuti 2', 'required|trim');
     $this->form_validation->set_rules('masuk', 'Tanggal Masuk', 'required|trim');
@@ -219,7 +218,7 @@ public function add_cuti()
             'jenis_cuti' => $this->input->post('jenis_cuti'),
             'keterangan' => $this->input->post('keterangan'),
             'jml_cuti' => $this->input->post('jml_cuti'),
-            'sisa_cuti' => $this->input->post('sisa_cuti'),
+            'sisa_cuti' => ($this->user_cuti->getSisaCuti() ? $this->user_cuti->getSisaCuti()['sisa_cuti'] : 12) - $this->input->post('jml_cuti'),
             'cuti' => $this->input->post('cuti'),
             'cuti2' => $this->input->post('cuti2'),
             'masuk' => $this->input->post('masuk'),

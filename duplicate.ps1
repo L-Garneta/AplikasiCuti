@@ -82,7 +82,7 @@ $methods = @"
 
     public function list_cuti_diluartanggungan_kary()
     {
-        `$data['title'] = 'Cuti Diluar Tanggungan';
+        `$data['title'] = 'Cuti Lain';
         `$data['user'] = `$this->db->get_where('mst_user', [
             'username' => `$this->session->userdata('username')
         ])->row_array();

@@ -27,6 +27,7 @@
                             <th scope="col">Cuti 2</th>
                             <th scope="col">Masuk Kerja</th>
                             <th scope="col">Status</th>
+                                <th scope="col">Alasan Ditolak</th>
                             <th scope="col">Opsi</th>
                         </tr>
                     </thead>
@@ -43,7 +44,7 @@
                                 <td><?php echo format_indo($uc['masuk']); ?></td>
                                 <?php if ($uc['is_approve'] == 1) : ?>
                                     <td><span class="btn btn-light btn-sm btn-block font-weight-bolder">Menunggu</span></td>
-                                    <td><a href="<?php echo base_url('staf/edit_cutilain/'); ?><?php echo $uc['id']; ?>" class="btn btn-info btn-sm btn-block"><i class="fas fa-edit"></i> Edit Data</a></td>
+                                    
                                 <?php elseif ($uc['is_approve'] == 2) : ?>
                                     <td><span class="btn btn-light btn-sm btn-block font-weight-bolder">Ditolak</span></td>
                                     <td><span class="badge badge-danger">Closed</span></td>

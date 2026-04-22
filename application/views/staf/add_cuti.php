@@ -75,39 +75,16 @@
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label for="ket">Keterangan :</label>
-								<input type="text" id="ket" name="keterangan" class="form-control"
+								<input type="text" id="ket" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)" class="form-control"
 									value="<?php echo $sisa_cuti['keterangan']; ?>">
 								<?php echo form_error('keterangan', '<small class="text-danger pl-1">', '</small>'); ?>
 							</div>
 							<div class="row">
-								<div class="col-md-4">
+								<div class="col-md-12">
 									<div class="form-group">
-										<label for="txt1">Sisa Cuti Terakhir</label>
-										<?php if ($sisa_cuti['sisa_cuti'] > -1): ?>
-											<input type="text" id="txt1" class="form-control"
-												value="<?php echo $sisa_cuti['sisa_cuti']; ?>" readonly>
-										<?php elseif ($sisa_cuti['is_approve'] == 2): ?>
-											<input type="text" id="txt1" class="form-control"
-												value="<?php echo $sisa_cuti['sisa_cuti'] + $sisa_cuti['jml_cuti']; ?>"
-												readonly>
-
-										<?php else: ?>
-											<input type="text" id="txt1" class="form-control" value="12" readonly>
-										<?php endif; ?>
-									</div>
-								</div>
-								<div class="col-md-4">
-									<div class="form-group">
-										<label for="txt2">Jumlah Cuti Diambil :</label>
-										<input type="text" id="txt2" name="jml_cuti" class="form-control" onkeyup="sum();">
+										<label for="txt2">Jumlah Cuti Diambil (Hari) :</label>
+										<input type="number" id="txt2" name="jml_cuti" class="form-control" required>
 										<?php echo form_error('jml_cuti', '<small class="text-danger pl-1">', '</small>'); ?>
-									</div>
-								</div>
-								<div class="col-md-4">
-									<div class="form-group">
-										<label for="txt3">Sisa Cuti Sekarang :</label>
-										<input type="text" id="txt3" name="sisa_cuti" class="form-control" readonly>
-										<?php echo form_error('sisa_cuti', '<small class="text-danger pl-1">', '</small>'); ?>
 									</div>
 								</div>
 							</div>
@@ -218,35 +195,16 @@
 						<div class="col-lg-6">
 							<div class="form-group">
 								<label for="ket">Keterangan :</label>
-								<input type="text" id="ket" name="keterangan" class="form-control"
+								<input type="text" id="ket" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)" class="form-control"
 									value="<?php echo $sisa_cuti['keterangan']; ?>">
 								<?php echo form_error('keterangan', '<small class="text-danger pl-1">', '</small>'); ?>
 							</div>
 							<div class="row">
-								<div class="col-md-4">
+								<div class="col-md-12">
 									<div class="form-group">
-										<label for="txt1">Sisa Cuti Terakhir</label>
-										<?php if ($sisa_cuti['is_approve'] == 2): ?>
-											<input type="text" id="txt1" class="form-control"
-												value="<?php echo $sisa_cuti['sisa_cuti'] + $sisa_cuti['jml_cuti']; ?>"
-												readonly>
-										<?php else: ?>
-											<input type="text" id="txt1" class="form-control" value="12" readonly>
-										<?php endif; ?>
-									</div>
-								</div>
-								<div class="col-md-4">
-									<div class="form-group">
-										<label for="txt2">Jumlah Cuti Diambil :</label>
-										<input type="text" id="txt2" name="jml_cuti" class="form-control" onkeyup="sum();">
+										<label for="txt2">Jumlah Cuti Diambil (Hari) :</label>
+										<input type="number" id="txt2" name="jml_cuti" class="form-control" required>
 										<?php echo form_error('jml_cuti', '<small class="text-danger pl-1">', '</small>'); ?>
-									</div>
-								</div>
-								<div class="col-md-4">
-									<div class="form-group">
-										<label for="txt3">Sisa Cuti Sekarang :</label>
-										<input type="text" id="txt3" name="sisa_cuti" class="form-control" readonly>
-										<?php echo form_error('sisa_cuti', '<small class="text-danger pl-1">', '</small>'); ?>
 									</div>
 								</div>
 							</div>
@@ -360,7 +318,7 @@
 							                            <div class="form-group col-md-4">
                                 <label for="jenis_cuti_lain">Jenis Cuti</label>
                                 <select class="form-control" id="jenis_cuti_lain" name="jenis_cuti">
-                                    <option>Cuti diluar (jatah bulanan)</option>
+                                    <option>Lain - Lain </option>
                                     <option>Cuti menikah</option>
                                     <option>Cuti sakit</option>
                                     <option>Cuti melahirkan</option>
@@ -379,7 +337,7 @@
 						<div class="form-row">
 							<div class="form-group col-md-8">
 								<label for="jenisCuti">Keterangan</label>
-								<input type="text" class="form-control" id="jenisCuti" name="keterangan"
+								<input type="text" class="form-control" id="jenisCuti" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)"
 									placeholder="Cth: Cuti Menikah, Cuti Melahirkan, Cuti Hamil" required>
 							</div>
 							<div class="form-group col-md-4">

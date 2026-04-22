@@ -58,14 +58,14 @@
 									<div class="form-group">
 										<label for="jenisCuti">Jenis Cuti</label>
 										<select class="form-control" id="jenisCuti" name="jenis_cuti">
-											<option>Cuti Tahunan</option>
+											<option>Cuti Bulanan</option>
 										</select>
 									</div>
 								</div>
 								<div class="col-lg-6">
 									<div class="form-group">
 										<label for="ket">Keterangan :</label>
-										<input type="text" id="ket" name="keterangan" class="form-control" value="<?php echo $sisa_cuti['keterangan']; ?>">
+										<input type="text" id="ket" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)" class="form-control" value="<?php echo $sisa_cuti['keterangan']; ?>">
 										<?php echo form_error('keterangan', '<small class="text-danger pl-1">', '</small>'); ?>
 									</div>
 									<div class="row">
@@ -182,14 +182,14 @@
 									<div class="form-group">
 										<label for="jenisCuti">Jenis Cuti</label>
 										<select class="form-control" id="jenisCuti" name="jenis_cuti">
-											<option>Cuti Tahunan</option>
+											<option>Cuti Bulanan</option>
 										</select>
 									</div>
 								</div>
 								<div class="col-lg-6">
 									<div class="form-group">
 										<label for="ket">Keterangan :</label>
-										<input type="text" id="ket" name="keterangan" class="form-control" value="<?php echo $sisa_cuti['keterangan']; ?>">
+										<input type="text" id="ket" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)" class="form-control" value="<?php echo $sisa_cuti['keterangan']; ?>">
 										<?php echo form_error('keterangan', '<small class="text-danger pl-1">', '</small>'); ?>
 									</div>
 									<div class="row">
@@ -329,7 +329,7 @@
 					<div class="form-row">
 						<div class="form-group col-md-8">
 							<label for="jenisCuti">Keterangan</label>
-							<input type="text" class="form-control" id="jenisCuti" name="keterangan" placeholder="Cth: Studi Banding, dll" required>
+							<input type="text" class="form-control" id="jenisCuti" name="keterangan" id="inputKeterangan" maxlength="150" oninput="limitWords(this, 20)" placeholder="Cth: Studi Banding, dll" required>
 						</div>
 						<div class="form-group col-md-4">
 							<label for="jenisCuti">No Telp / Handphone</label>

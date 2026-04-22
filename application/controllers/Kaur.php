@@ -17,8 +17,8 @@ class Kaur extends CI_Controller
 		$data['title'] = 'Beranda';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
 
-		$data['count_cuti_tahunan'] = $this->db->where('is_approve', 0)->count_all_results('form_cuti');
-		$data['count_cuti_luartanggungan'] = $this->db->where('is_approve', 0)->count_all_results('formcuti_lain');
+		$data['count_cuti_tahunan'] = $this->db->where('approved_kaur', 1)->count_all_results('form_cuti');
+		$data['count_cuti_luartanggungan'] = $this->db->where('approved_kaur', 1)->count_all_results('formcuti_lain');
 		$data['count_cuti_ditolak'] = $this->db->where('is_approve', 2)->count_all_results('form_cuti');
 		$data['count_user'] = $this->db->count_all('mst_user');
 		$data['pegawai'] = $this->db->get('mst_user')->result_array();
@@ -336,8 +336,13 @@ class Kaur extends CI_Controller
 	}
 
 	public function cuti_staf()
-	{
-		$data['title'] = 'Approval Cuti Bulanan (Jatah Sebulan Sekali)';
+    {
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
+		$data['title'] = 'Approval Cuti Bulanan';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
 		$data['user_cuti'] = $this->db->get_where('form_cuti', ['id_user' => $this->session->userdata('id')])->result_array();
 
@@ -352,7 +357,12 @@ class Kaur extends CI_Controller
 	}
 
 	public function cutilain_staf()
-	{
+    {
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
 		$data['title'] = 'Approval Cuti (Menikah, Melahirkan, dll)';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
 		$data['user_cuti'] = $this->db->get_where('formcuti_lain', ['id_user' => $this->session->userdata('id')])->result_array();
@@ -715,21 +725,40 @@ class Kaur extends CI_Controller
 		$this->load->view('templates/header', $data);
 		$this->load->view('templates/sidebar', $data);
 		$this->load->view('templates/topbar', $data);
-		$this->load->view('kaur/data/view_cutitahunan', $data);
+		$this->load->view('kaur/view_cutitahunan', $data);
 		$this->load->view('templates/footer');
 	}
-    // ======================================
-    // DUPLIKAT DARI SDM 
-    // ======================================
 
     public function list_kary()
     {
+        $id = $this->input->post('pegawai_id');
+        if ($id) {
+            $data_update = [
+                'nama' => $this->input->post('nama'),
+                'nik' => $this->input->post('nik'),
+                'jabatan' => $this->input->post('jabatan'),
+                'alamat' => $this->input->post('alamat'),
+                'telp' => $this->input->post('telp'),
+                'jenis_kelamin' => $this->input->post('jenis_kelamin'),
+                'agama' => $this->input->post('agama'),
+                'kota_lahir' => $this->input->post('kota_lahir'),
+                'tgl_lahir' => $this->input->post('tgl_lahir')
+            ];
+            $this->db->where('id', $id);
+            $this->db->update('mst_user', $data_update);
+            $this->session->set_flashdata('message', 'Data Karyawan Berhasil Diupdate');
+            redirect('kaur/list_kary');
+        }
+
         $data['title'] = 'List Karyawan';
         $data['user'] = $this->db->get_where('mst_user', [
             'username' => $this->session->userdata('username')
         ])->row_array();
 
-        $data['pegawai'] = $this->db->get('mst_user')->result_array();
+        $this->db->select('mst_user.*, data_pegawai.pegawai_id');
+        $this->db->from('mst_user');
+        $this->db->join('data_pegawai', 'data_pegawai.pegawai_id = mst_user.id', 'left');
+        $data['pegawai'] = $this->db->get()->result_array();
 
         $this->load->view('templates/header', $data);
         $this->load->view('templates/sidebar', $data);
@@ -784,11 +813,17 @@ class Kaur extends CI_Controller
 
     public function list_cuti_kary()
     {
-        $data['title'] = 'List Cuti Karyawan';
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
+        $data['title'] = 'List Cuti Bulanan';
         $data['user'] = $this->db->get_where('mst_user', [
             'username' => $this->session->userdata('username')
         ])->row_array();
 
+        $this->db->order_by('id', 'DESC');
         $data['cuti_kary'] = $this->db->get('form_cuti')->result_array();
 
         $this->load->view('templates/header', $data);
@@ -800,11 +835,12 @@ class Kaur extends CI_Controller
 
     public function list_cuti_diluartanggungan_kary()
     {
-        $data['title'] = 'Cuti Diluar Tanggungan';
+        $data['title'] = 'Cuti Lain';
         $data['user'] = $this->db->get_where('mst_user', [
             'username' => $this->session->userdata('username')
         ])->row_array();
 
+        $this->db->order_by('id', 'DESC');
         $data['cuti_kary'] = $this->db->get('formcuti_lain')->result_array();
 
         $this->load->view('templates/header', $data);
@@ -834,11 +870,310 @@ class Kaur extends CI_Controller
         $data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
         $data['cuti_pegawai'] = $this->db->get_where('formcuti_lain', ['id' => $id])->result_array();
         
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('templates/topbar', $data);
-        $this->load->view('kaur/detail_cuti_diluartanggungan', $data);
-        $this->load->view('templates/footer');
+		$this->load->view('templates/sidebar', $data);
+		$this->load->view('templates/topbar', $data);
+		$this->load->view('kaur/detail_cuti_diluartanggungan', $data);
+		$this->load->view('templates/footer');
+	}
+
+	public function cetak_rekap($jenis = 'bulanan')
+    {
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+
+        if ($jenis == 'bulanan') {
+            $this->db->where('is_approve', 0);
+            if ($m) $this->db->where('MONTH(input)', $m);
+            if ($y) $this->db->where('YEAR(input)', $y);
+            $cuti = $this->db->get('form_cuti')->result_array();
+            $tgl_field = 'input';
+        } else {
+            $this->db->where('is_approve', 0);
+            if ($m) $this->db->where('MONTH(tgl_input)', $m);
+            if ($y) $this->db->where('YEAR(tgl_input)', $y);
+            $cuti = $this->db->get('formcuti_lain')->result_array();
+            $tgl_field = 'tgl_input';
+        }
+
+        $this->load->library('Pdf');
+        $pdf = new FPDF('L', 'mm', 'A4');
+        $pdf->AddPage();
+        $pdf->Image(FCPATH . 'assets/img/logo.png', 10, 10, 20);
+
+        // ================= HEADER =================
+        $pdf->SetFont('Times', 'B', 12);
+        $pdf->Cell(277, 6, 'KLINIK PRATAMA RAWAT INAP', 0, 1, 'C');
+        $pdf->SetFont('Times', 'B', 14);
+        $pdf->Cell(277, 6, '"DARUSSYIFA"', 0, 1, 'C');
+
+        $pdf->SetFont('Times', '', 10);
+        $pdf->Cell(277, 5, 'Jl. Joyoboyo Timur, Ds. Sumbercangkring Kec. Gurah Kab. Kediri', 0, 1, 'C');
+        $pdf->Cell(277, 5, 'Telp. 082336799868  email : klinikdarusyifa@gontor.ac.id', 0, 1, 'C');
+
+        $pdf->Ln(5);
+        $pdf->Cell(277, 0, '', 1, 1);
+        $pdf->Ln(5);
+
+        // ================= JUDUL =================
+        $pdf->SetFont('Times', 'B', 14);
+        $nama_bulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $periode = ($m && $y) ? $nama_bulan[(int)$m] . ' ' . $y : 'Semua Periode';
+        $pdf->Cell(277, 7, 'REKAP CUTI PERIODE ' . strtoupper($periode), 0, 1, 'C');
+        $pdf->Ln(8);
+
+        // ================= TABEL =================
+        $pdf->SetFont('Times', 'B', 10);
+        $pdf->Cell(10, 7, 'No', 1, 0, 'C');
+        $pdf->Cell(25, 7, 'NIK', 1, 0, 'C');
+        $pdf->Cell(45, 7, 'Nama', 1, 0, 'C');
+        $pdf->Cell(30, 7, 'Bagian', 1, 0, 'C');
+        $pdf->Cell(22, 7, 'Tgl Input', 1, 0, 'C');
+        $pdf->Cell(22, 7, 'Tgl Cuti', 1, 0, 'C');
+        $pdf->Cell(22, 7, 'Sampai', 1, 0, 'C');
+        $pdf->Cell(12, 7, 'Total', 1, 0, 'C');
+        $pdf->Cell(22, 7, 'Tgl Masuk', 1, 0, 'C');
+        $pdf->Cell(67, 7, 'Keterangan', 1, 1, 'C');
+
+        $pdf->SetFont('Times', '', 10);
+        $no = 1;
+        foreach ($cuti as $c) {
+            $pdf->Cell(10, 6, $no++, 1, 0, 'C');
+            $pdf->Cell(25, 6, $c['nik'], 1, 0, 'C');
+            $pdf->Cell(45, 6, substr($c['nama'], 0, 25), 1, 0, 'L');
+            $pdf->Cell(30, 6, substr($c['bagian'], 0, 20), 1, 0, 'C');
+            $pdf->Cell(22, 6, format_indo($c[$tgl_field] ?? date('Y-m-d')), 1, 0, 'C');
+            $pdf->Cell(22, 6, format_indo($c['cuti']), 1, 0, 'C');
+            $pdf->Cell(22, 6, format_indo($c['cuti2']), 1, 0, 'C');
+            $pdf->Cell(12, 6, $c['jml_cuti'] . ' Hr', 1, 0, 'C');
+            $pdf->Cell(22, 6, format_indo($c['masuk']), 1, 0, 'C');
+            $pdf->Cell(67, 6, $c['keterangan'], 1, 1, 'L');
+        }
+
+        $pdf->Ln(15);
+
+        // ================= TANDA TANGAN =================
+        $pdf->Cell(277, 7, 'Kediri, ' . format_indo(date('Y-m-d')), 0, 1, 'R');
+        $pdf->Ln(2);
+
+        $pdf->Cell(138, 5, 'Mengetahui,', 0, 0, 'C');
+        $pdf->Cell(138, 5, 'Mengetahui,', 0, 1, 'C');
+        
+        $pdf->Cell(138, 5, 'Bagian SDM', 0, 0, 'C');
+        $pdf->Cell(138, 5, 'Penanggung Jawab Klinik', 0, 1, 'C');
+
+        $pdf->Ln(20);
+
+        $pdf->Cell(138, 5, 'Elliningtiyas,SE', 0, 0, 'C');
+        $pdf->Cell(138, 5, 'dr. Agung Wibowo', 0, 1, 'C');
+
+        $pdf->Cell(138, 5, 'NIK : 2023.11.015', 0, 0, 'C');
+        $pdf->Cell(138, 5, 'NIK : 2023.11.001', 0, 1, 'C');
+
+        $pdf->Ln(15);
+
+        // ================= FOOTER =================
+        $pdf->SetY(-15);
+        $pdf->SetFont('Times', 'I', 10);
+        $pdf->Cell(277, 5, 'Tulus Mengabdi, Iklas Melayani', 0, 1, 'R');
+
+        $pdf->Output('I', "Rekap_Cuti_{$m}_{$y}.pdf");
     }
 
+    public function hitung_gaji_ajax()
+    {
+        $id_pegawai = $this->input->post('id_pegawai');
+        $bulan = $this->input->post('bulan');
+        $tahun = $this->input->post('tahun');
+        $gaji_pokok = $this->input->post('gaji_pokok');
+        // Manual hari_bolos removed as per user request to rely on DB sync
+
+        $pegawai = $this->db->get_where('mst_user', ['id' => $id_pegawai])->row_array();
+        if (!$pegawai) {
+            echo json_encode(['status' => 'error', 'message' => 'Pegawai tidak ditemukan']);
+            return;
+        }
+
+        $total_hari = 0;
+        $total_cuti_bulanan = 0;
+        
+        // Cuti Bulanan (form_cuti)
+        $this->db->where('id_user', $id_pegawai);
+        $this->db->where('is_approve', 0);
+        $this->db->where('MONTH(cuti)', $bulan);
+        $this->db->where('YEAR(cuti)', $tahun);
+        $this->db->where_not_in('jenis_cuti', ['Melahirkan', 'Menikah', 'Sakit']);
+        $cuti_reguler = $this->db->get('form_cuti')->result_array();
+        foreach ($cuti_reguler as $cr) {
+            $total_cuti_bulanan += $cr['jml_cuti'];
+        }
+
+        // Potong gaji untuk cuti bulanan hanya jika melebihi jatah 1 hari
+        if ($total_cuti_bulanan > 1) {
+            $total_hari += ($total_cuti_bulanan - 1);
+        }
+
+        // Cuti Lainnya (formcuti_lain) di luar tanggungan
+        $this->db->where('id_user', $id_pegawai);
+        $this->db->where('is_approve', 0);
+        $this->db->where('MONTH(cuti)', $bulan);
+        $this->db->where('YEAR(cuti)', $tahun);
+        $this->db->where_not_in('jenis_cuti', ['Melahirkan', 'Menikah', 'Sakit']);
+        $cuti_lain = $this->db->get('formcuti_lain')->result_array();
+        foreach ($cuti_lain as $cl) {
+            $total_hari += $cl['jml_cuti'];
+        }
+
+        $total_hari += 0; // Manual hari_bolos removed
+        $pot_absensi = round(($gaji_pokok / 30) * $total_hari);
+        
+        // Sum all Pendapatan
+        $gaji_lembur = (int) $this->input->post('gaji_lembur');
+        $tunj_kinerja = (int) $this->input->post('tunj_kinerja');
+        $tunj_jabatan = (int) $this->input->post('tunj_jabatan');
+        $tunj_makan = (int) $this->input->post('tunj_makan');
+        $tunj_beras = (int) $this->input->post('tunj_beras');
+        $jasa_pelayanan = (int) $this->input->post('jasa_pelayanan');
+        
+        $total_thp = $gaji_pokok + $gaji_lembur + $tunj_kinerja + $tunj_jabatan + $tunj_makan + $tunj_beras + $jasa_pelayanan;
+
+        // Sum all Potongan
+        $pot_bpjs = (int) $this->input->post('pot_bpjs');
+        $pot_kesehatan = (int) $this->input->post('pot_kesehatan');
+        $pot_telat = (int) $this->input->post('pot_telat');
+        $pot_pajak = (int) $this->input->post('pot_pajak');
+        // Manual override pot_absensi if provided (though we usually fill it via ajax first)
+        $pot_absensi_input = $this->input->post('pot_absensi');
+        if($pot_absensi_input !== null && $pot_absensi_input !== '') {
+            $pot_absensi = (int) $pot_absensi_input;
+        }
+
+        $total_potongan = $pot_absensi + $pot_bpjs + $pot_kesehatan + $pot_telat + $pot_pajak;
+        $gaji_bersih = $total_thp - $total_potongan;
+
+        echo json_encode([
+            'status' => 'success',
+            'total_cuti' => $total_hari,
+            'potongan_raw' => $pot_absensi,
+            'total_thp' => number_format($total_thp, 0, ',', '.'),
+            'total_potongan' => number_format($total_potongan, 0, ',', '.'),
+            'gaji_bersih' => number_format($gaji_bersih, 0, ',', '.')
+        ]);
+    }
+
+    public function cetak_slip_gaji()
+    {
+        $id_pegawai = $this->input->post('id_pegawai');
+        $m = $this->input->post('bulan');
+        $y = $this->input->post('tahun');
+        
+        $pegawai = $this->db->get_where('mst_user', ['id' => $id_pegawai])->row_array();
+        if (!$pegawai) return;
+
+        $nama_bulan = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $periode = $nama_bulan[(int)$m] . ' ' . $y;
+
+        $this->load->library('Pdf');
+        // Ukuran Slip Gaji 10cm x 14cm Portrait
+        $pdf = new FPDF('P', 'mm', array(100, 140));
+        $pdf->AddPage();
+        
+        // ================= KOP =================
+        $pdf->Image(FCPATH . 'assets/img/logo.png', 5, 5, 12);
+        $pdf->SetFont('Times', 'B', 8);
+        $pdf->Cell(90, 4, 'KLINIK PRATAMA RAWAT INAP', 0, 1, 'C');
+        $pdf->Cell(90, 4, '"DARUSSYIFA"', 0, 1, 'C');
+        $pdf->SetFont('Times', '', 6);
+        $pdf->Cell(90, 3, 'Jl. Joyoboyo Timur, Ds. Sumbercangkring Kediri', 0, 1, 'C');
+        $pdf->Ln(1);
+        $pdf->Cell(90, 0, '', 1, 1);
+        $pdf->Ln(1);
+
+        // ================= JUDUL =================
+        $pdf->SetFont('Times', 'BU', 9);
+        $pdf->Cell(90, 4, 'SLIP IHSAN KARYAWAN', 0, 1, 'C');
+        $pdf->SetFont('Times', 'B', 8);
+        $pdf->Cell(90, 4, 'Bulan : ' . $periode, 0, 1, 'C');
+        $pdf->Ln(2);
+
+        // ================= INFO KARYAWAN =================
+        $pdf->SetFont('Times', '', 8);
+        $pdf->Cell(15, 4, 'Nama', 0, 0); $pdf->Cell(3, 4, ':', 0, 0); $pdf->Cell(32, 4, substr($pegawai['nama'],0,20), 0, 0);
+        $pdf->Cell(12, 4, 'Bagian', 0, 0); $pdf->Cell(3, 4, ':', 0, 0); $pdf->Cell(25, 4, $pegawai['bagian'], 0, 1);
+        
+        $pdf->Cell(15, 4, 'NIK', 0, 0); $pdf->Cell(3, 4, ':', 0, 0); $pdf->Cell(32, 4, $pegawai['nik'], 0, 0);
+        $pdf->Cell(12, 4, 'Jabatan', 0, 0); $pdf->Cell(3, 4, ':', 0, 0); $pdf->Cell(25, 4, substr($pegawai['jabatan'],0,15), 0, 1);
+        $pdf->Ln(2);
+
+        // ================= RINCIAN =================
+        $pdf->SetFont('Times', 'B', 8);
+        $pdf->Cell(45, 5, 'Penerimaan', 1, 0, 'C');
+        $pdf->Cell(45, 5, 'Potongan', 1, 1, 'C');
+        
+        $pdf->SetFont('Times', '', 7);
+        
+        // Data Pendapatan
+        $gp = (int)$this->input->post('gaji_pokok');
+        $gl = (int)$this->input->post('gaji_lembur');
+        $tk = (int)$this->input->post('tunj_kinerja');
+        $tj = (int)$this->input->post('tunj_jabatan');
+        $tm = (int)$this->input->post('tunj_makan');
+        $tb = (int)$this->input->post('tunj_beras');
+        $jp = (int)$this->input->post('jasa_pelayanan');
+        $total_thp = $gp + $gl + $tk + $tj + $tm + $tb + $jp;
+
+        // Data Potongan
+        $pa = (int)$this->input->post('pot_absensi');
+        $pb = (int)$this->input->post('pot_bpjs');
+        $pk = (int)$this->input->post('pot_kesehatan');
+        $pt = (int)$this->input->post('pot_telat');
+        $pp = (int)$this->input->post('pot_pajak');
+        $total_pot = $pa + $pb + $pk + $pt + $pp;
+
+        $rows = [
+            ['Gaji Pokok', $gp, 'Pot. Absensi', $pa],
+            ['Gaji Lembur', $gl, 'BPJS', $pb],
+            ['Tunj. Kinerja', $tk, 'Kesejahteraan', $pk],
+            ['Tunj. Jabatan', $tj, 'Pot. Telat', $pt],
+            ['Tunj. Makan', $tm, 'Pot. Pajak', $pp],
+            ['Tunj. Beras', $tb, '', ''],
+            ['Jasa Pelayanan', $jp, '', '']
+        ];
+
+        foreach($rows as $row) {
+            $pdf->Cell(28, 4, $row[0], 'LR', 0, 'L');
+            $pdf->Cell(17, 4, $row[1] > 0 ? number_format($row[1],0,',','.') : '', 'R', 0, 'R');
+            $pdf->Cell(28, 4, $row[2], 'R', 0, 'L');
+            $pdf->Cell(17, 4, $row[3] > 0 ? number_format($row[3],0,',','.') : '', 'R', 1, 'R');
+        }
+
+        $pdf->SetFont('Times', 'B', 7);
+        $pdf->Cell(28, 5, 'Total THP', 1, 0, 'L');
+        $pdf->Cell(17, 5, number_format($total_thp,0,',','.'), 1, 0, 'R');
+        $pdf->Cell(28, 5, 'Total Pot.', 1, 0, 'L');
+        $pdf->Cell(17, 5, number_format($total_pot,0,',','.'), 1, 1, 'R');
+        
+        $pdf->Ln(1);
+        $pdf->SetFont('Times', 'B', 8);
+        $pdf->Cell(65, 5, 'GAJI DIBAYARKAN', 1, 0, 'R');
+        $pdf->SetFillColor(230, 230, 230);
+        $pdf->Cell(25, 5, 'Rp '.number_format($total_thp - $total_pot,0,',','.'), 1, 1, 'R', true);
+        $pdf->Ln(2);
+
+        // ================= TANDA TANGAN =================
+        $pdf->SetFont('Times', '', 7);
+        $pdf->Cell(45, 4, 'Yang menerima,', 0, 0, 'C');
+        $pdf->Cell(45, 4, 'Bagian SDM,', 0, 1, 'C');
+        
+        $pdf->Ln(6);
+        
+        $pdf->SetFont('Times', 'BU', 7);
+        $pdf->Cell(45, 4, substr($pegawai['nama'],0,20), 0, 0, 'C');
+        $pdf->Cell(45, 4, 'Elliningtiyas, S.E', 0, 1, 'C');
+        
+        $pdf->SetFont('Times', '', 6);
+        $pdf->Cell(45, 3, 'NIK : ' . $pegawai['nik'], 0, 0, 'C');
+        $pdf->Cell(45, 3, 'NIK : 2023.11.015', 0, 1, 'C');
+
+        $pdf->Output('I', "Slip_Gaji_{$pegawai['nama']}_{$periode}.pdf");
+    }
 }

@@ -19,13 +19,9 @@ public function index()
     ])->row_array();
 
     // 🔥 TAMBAHAN (STATISTIK DASHBOARD)
-    $data['count_cuti_tahunan'] = $this->db
-        ->where('is_approve', 0)
-        ->count_all_results('form_cuti');
+    $data['count_cuti_tahunan'] = $this->db->where('approved_kaur', 0)->where('approved_sdm', 1)->count_all_results('form_cuti');
 
-    $data['count_cuti_luartanggungan'] = $this->db
-        ->where('is_approve', 0)
-        ->count_all_results('formcuti_lain');
+    $data['count_cuti_luartanggungan'] = $this->db->where('approved_kaur', 0)->where('approved_sdm', 1)->count_all_results('formcuti_lain');
 
     $data['count_cuti_ditolak'] = $this->db
         ->where('is_approve', 2)
@@ -94,6 +90,11 @@ public function list_kary()
     // ==========================
     public function cuti_kaur()
     {
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
         $data['title'] = 'Approval KAUR';
         $data['user'] = $this->db->get_where('mst_user', [
             'username' => $this->session->userdata('username')
@@ -144,7 +145,12 @@ public function list_kary()
     // ==========================
     public function cuti_sdm()
     {
-        $data['title'] = 'Approval Cuti Bulanan (Jatah Sebulan Sekali)';
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
+        $data['title'] = 'Approval Cuti Bulanan';
         $data['user'] = $this->db->get_where('mst_user', [
             'username' => $this->session->userdata('username')
         ])->row_array();
@@ -189,7 +195,12 @@ public function list_kary()
 
     public function list_cuti_kary()
     {
-        $data['title'] = 'List Cuti Karyawan';
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
+        $data['title'] = 'List Cuti Bulanan';
     $data['user'] = $this->db->get_where('mst_user', [
         'username' => $this->session->userdata('username')
     ])->row_array();
@@ -236,7 +247,7 @@ public function list_cuti_ditolak()
 }
 public function list_cuti_diluartanggungan_kary()
 {
-    $data['title'] = 'Cuti Diluar Tanggungan';
+    $data['title'] = 'Cuti Lain';
     $data['user'] = $this->db->get_where('mst_user', [
         'username' => $this->session->userdata('username')
     ])->row_array();
@@ -251,7 +262,12 @@ public function list_cuti_diluartanggungan_kary()
     }
 
 	public function cutilain_sdm()
-	{
+    {
+        $m = $this->input->get('m');
+        $y = $this->input->get('y');
+        $data['m'] = $m;
+        $data['y'] = $y;
+
 		$data['title'] = 'Approval Cuti (Menikah, Melahirkan, dll)';
 		$data['user'] = $this->db->get_where('mst_user', ['username' => $this->session->userdata('username')])->row_array();
 		
@@ -379,5 +395,6 @@ public function list_cuti_diluartanggungan_kary()
             redirect('sdm/index');
         }
     }
+
 
 }

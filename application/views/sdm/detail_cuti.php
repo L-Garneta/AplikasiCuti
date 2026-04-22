@@ -97,7 +97,14 @@
                                     <span class="badge">Menunggu</span>
                                 <?php endif; ?>
                             </li>
+                            
                             </li>
+                            <?php if (isset($cuti['is_approve']) && $cuti['is_approve'] == 2 && !empty($cuti['alasan_ditolak'])): ?>
+                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-item-danger mt-1">
+                                <strong>Alasan Ditolak:</strong>
+                                <span><?php echo $cuti['alasan_ditolak']; ?></span>
+                            </li>
+                            <?php endif; ?>
                         </ul>
                     </div>
                 </div>
